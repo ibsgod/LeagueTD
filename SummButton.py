@@ -4,32 +4,32 @@ from Info import Info
 
 
 class SummButton:
-    def __init__(self, x, y, screen, img, Champ, label=None):
+    def __init__(self, x, y, screen, Champ, label=None, img=None):
         self.screen = screen
         self.label = label
-        self.img = pygame.image.load(img)
+        # self.img = pygame.image.load(img)
         self.Champ = Champ
-        self.coll = pygame.Rect(x, y, img.get_width(), img.get_height())
+        self.champy = Champ(0, 0, summ=True)
+        self.coll = pygame.Rect(x, y, 150, 100)
 
     def tick(self, mousePos, click):
         has = False
         for i in Info.champions:
             if isinstance(i, self.Champ):
                 has = True
-        if has:
-            # grayed out champ
-            pass
-        elif self.coll.collidepoint(mousePos[0], mousePos[1]):
-            pygame.draw.rect(self.screen, (min(255, self.color[0]+50), min(255, self.color[1]+50), min(255, self.color[2]+50)), self.coll)
-            if self.label is not None:
-                self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2, self.coll.y + (self.coll.height - self.label.get_height()) / 2))
-            if click:
-                return True
+        if has or Info.be < self.champy.be:
+            pygame.draw.rect(self.screen, (100, 100, 100), self.coll)
         else:
-            pygame.draw.rect(self.screen, self.color, self.coll)
-            if self.label is not None:
-                self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2, self.coll.y + (self.coll.height - self.label.get_height()) / 2))
-        return False
+            pygame.draw.rect(self.screen, (0, 200, 0), self.coll)
+        if self.coll.collidepoint(mousePos[0], mousePos[1]):
+            maxbar = pygame.Surface((self.coll.width, self.coll.height))
+            maxbar.set_alpha(20)
+            maxbar.fill((255, 255, 255))
+            self.screen.blit(maxbar, (self.coll.x, self.coll.y))
+            if click and Info.be >= self.champy.be:
+                return 2
+            return 1
+        return 0
 
     def changeLabel(self, label):
         self.label = label

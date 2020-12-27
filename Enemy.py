@@ -22,6 +22,7 @@ class Enemy:
         self.cy = self.y + self.height/2
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         self.flip = False
+        self.slow = (0, 0)
 
     def draw(self, screen):
         # screen.blit(pygame.transform.flip(self.img, self.flip, False), (int(self.x), int(self.y)))
@@ -38,7 +39,7 @@ class Enemy:
 
     def tick(self, mousePos, click):
         self.move()
-        if self.hitbox.collidepoint(mousePos):
+        if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
             if click:
                 Info.selected = self
                 return 2
@@ -46,15 +47,18 @@ class Enemy:
         return
 
     def move(self):
+        newspeed = self.speed
+        if self.slow[1] > pygame.time.get_ticks():
+            newspeed *= self.slow[0]
         if self.path < len(Info.enemypath):
             if self.cx != Info.enemypath[self.path][0]:
-                if abs(Info.enemypath[self.path][0] - (self.cx)) > self.speed:
-                    self.x += self.speed * (Info.enemypath[self.path][0] - (self.cx)) / abs(Info.enemypath[self.path][0] - (self.cx))
+                if abs(Info.enemypath[self.path][0] - (self.cx)) > newspeed:
+                    self.x += newspeed * (Info.enemypath[self.path][0] - (self.cx)) / abs(Info.enemypath[self.path][0] - (self.cx))
                 else:
                     self.x += Info.enemypath[self.path][0] - (self.cx)
             if self.cy != Info.enemypath[self.path][1]:
-                if abs(Info.enemypath[self.path][1] - (self.cy)) > self.speed:
-                    self.y += self.speed * (Info.enemypath[self.path][1] - (self.cy)) / abs(Info.enemypath[self.path][1] - (self.cy))
+                if abs(Info.enemypath[self.path][1] - (self.cy)) > newspeed:
+                    self.y += newspeed * (Info.enemypath[self.path][1] - (self.cy)) / abs(Info.enemypath[self.path][1] - (self.cy))
                 else:
                     self.y += Info.enemypath[self.path][1] - (self.cy)
             if self.cx == Info.enemypath[self.path][0] and self.cy == Info.enemypath[self.path][1]:

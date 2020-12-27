@@ -6,7 +6,7 @@ from Info import Info
 
 
 class Sidebar:
-    def draw(self, screen, selected):
+    def draw(self, screen, selected, hover=False):
         pygame.draw.rect(screen, (0, 0, 200), (1050, 200, 250, 450))
         if selected is None:
             return
@@ -27,18 +27,18 @@ class Sidebar:
             manaLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 20).render(
                 str(selected.mana) + " / " + str(selected.maxmana), 1, (255, 255, 255))
             screen.blit(manaLbl, ((1175 - manaLbl.get_width() / 2, 273)))
-        y = self.drawText(screen, "Attack: " + str(selected.atk), (255, 255, 255),
-                          pygame.Rect(1065, 310, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 30))
-        y = self.drawText(screen, "Attack speed: " + str(1/selected.atkspd), (255, 255, 255),
-                          pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 30))
+        y = self.drawText(screen, "Attack: " + '{0:.3g}'.format(selected.atk), (255, 255, 255),
+                          pygame.Rect(1065, 310, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))
+        y = self.drawText(screen, "Attack speed: " + '{0:.3g}'.format(1/selected.atkspd), (255, 255, 255),
+                          pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))
         if hasattr(selected, "passDesc"):
             y = self.drawText(screen, selected.passName + " - Passive: " + selected.passDesc, (255, 255, 255),
-                     pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 30))
+                     pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))
             y = self.drawText(screen, selected.actName + " - Active: " + selected.actDesc, (255, 255, 255),
-                          pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 30))
-        if isinstance(selected, Champion):
-                setattr(Info.buttDict["use"].coll, "y", y + 20)
-                setattr(Info.buttDict["sell"].coll, "y", Info.buttDict["use"].coll.height + y + 40)
+                          pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))
+        if isinstance(selected, Champion) and not hover:
+            setattr(Info.buttDict["use"].coll, "y", y + 20)
+            setattr(Info.buttDict["sell"].coll, "y", Info.buttDict["use"].coll.height + y + 30)
 
     def drawText(self, surface, text, color, rect, font, aa=False, bkg=None):
         y = rect.top

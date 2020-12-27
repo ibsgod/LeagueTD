@@ -19,14 +19,27 @@ class Button:
                     self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2,
                                                   self.coll.y + (self.coll.height - self.label.get_height()) / 2))
 
-            elif pygame.time.get_ticks() - Info.selected.actCd[0] > Info.selected.actCd[1] * 1000:
+            elif pygame.time.get_ticks() - Info.selected.actCd[0] > Info.selected.actCd[1] * 1000 and Info.selected.mana >= Info.selected.actCost and Info.selected.canUse:
                 pygame.draw.rect(self.screen, (0, 250, 0), self.coll)
                 self.label = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Use", 1, (255, 255, 255))
                 self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2,
                                               self.coll.y + (self.coll.height - self.label.get_height()) / 2))
 
+            elif pygame.time.get_ticks() - Info.selected.actCd[0] > Info.selected.actCd[1] * 1000 and Info.selected.mana >= Info.selected.actCost:
+                pygame.draw.rect(self.screen, (150, 150, 150), self.coll)
+                self.label = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Can't use", 1,(255, 255, 255))
+                self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2,
+                                              self.coll.y + (self.coll.height - self.label.get_height()) / 2))
+
+            elif pygame.time.get_ticks() - Info.selected.actCd[0] > Info.selected.actCd[1] * 1000:
+                pygame.draw.rect(self.screen, (150, 150, 150), self.coll)
+                self.label = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Not enough mana", 1, (255, 255, 255))
+                self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2,
+                                              self.coll.y + (self.coll.height - self.label.get_height()) / 2))
+
             else:
                 pygame.draw.rect(self.screen, (100, 100, 100), self.coll)
+                pygame.draw.rect(self.screen, (150, 150, 150), (self.coll.x, self.coll.y, (pygame.time.get_ticks() - Info.selected.actCd[0]) / Info.selected.actCd[1] / 1000 * self.coll.width, self.coll.height))
                 self.label = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Not Ready", 1, (255, 255, 255))
                 self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2,
                                                  self.coll.y + (self.coll.height - self.label.get_height()) / 2))
@@ -39,14 +52,25 @@ class Button:
             if self.label is not None:
                 self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2, self.coll.y + (self.coll.height - self.label.get_height()) / 2))
 
-        elif pygame.time.get_ticks() - Info.selected.actCd[0] > Info.selected.actCd[1] * 1000:
+        elif pygame.time.get_ticks() - Info.selected.actCd[0] > Info.selected.actCd[1] * 1000 and Info.selected.mana >= Info.selected.actCost and Info.selected.canUse:
             pygame.draw.rect(self.screen, (0, 200, 0), self.coll)
             self.label = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Use", 1, (255, 255, 255))
+            self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2,self.coll.y + (self.coll.height - self.label.get_height()) / 2))
+
+        elif pygame.time.get_ticks() - Info.selected.actCd[0] > Info.selected.actCd[1] * 1000 and Info.selected.mana >= Info.selected.actCost:
+            pygame.draw.rect(self.screen, (150, 150, 150), self.coll)
+            self.label = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Can't use", 1, (255, 255, 255))
             self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2,
                                           self.coll.y + (self.coll.height - self.label.get_height()) / 2))
 
+        elif pygame.time.get_ticks() - Info.selected.actCd[0] > Info.selected.actCd[1] * 1000:
+            pygame.draw.rect(self.screen, (150, 150, 150), self.coll)
+            self.label = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Not enough mana", 1, (255, 255, 255))
+            self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2, self.coll.y + (self.coll.height - self.label.get_height()) / 2))
+
         else:
             pygame.draw.rect(self.screen, (100, 100, 100), self.coll)
+            pygame.draw.rect(self.screen, (150, 150, 150), (self.coll.x, self.coll.y,(pygame.time.get_ticks() - Info.selected.actCd[0]) /Info.selected.actCd[1] / 1000 * self.coll.width, self.coll.height))
             self.label = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Not Ready", 1, (255, 255, 255))
             self.screen.blit(self.label, (self.coll.x + (self.coll.width - self.label.get_width()) / 2,
                                           self.coll.y + (self.coll.height - self.label.get_height()) / 2))

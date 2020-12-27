@@ -6,17 +6,20 @@ from Info import Info
 
 
 class Projectile:
-    def __init__(self, x, y, angle, tower):
+    def __init__(self, x, y, angle, tower, pen=False, speed=80, atk=1, name=""):
         self.x = x
         self.y = y
         self.angle = angle
         self.rotate = 0
-        self.speed = 80
+        self.speed = speed
         self.size = 15
+        self.pen = pen
+        self.atk = atk
         self.tower = tower
         self.img = pygame.image.load('egg.png')
         self.hitbox = pygame.Rect(self.x, self.y, self.size, self.size)
         self.hit = []
+        self.name = name
 
     def rot_center(self, image, angle):
         rotated_image = pygame.transform.rotate(image, angle)
@@ -34,10 +37,15 @@ class Projectile:
         self.hitbox = pygame.Rect(self.x, self.y, self.size, self.size)
         if self.x < 0 or self.y < 0 or self.x - 15 > 1050 or self.y - 15 > 550:
             self.tower.projects.remove(self)
+            return
         for i in Info.enemies:
             if i.hitbox.colliderect(self.hitbox) and i not in self.hit:
-                i.takeDamage(self.tower.atk)
-                self.hit.append(i)
-                self.tower.projects.remove(self)
-                break
+                if self.name == "Ashe":
+                    i.slow = (0.5, pygame.time.get_ticks() + 3000)
+                i.takeDamage(self.tower.atk * self.atk)
+                if not self.pen:
+                    self.tower.projects.remove(self)
+                    return
+                else:
+                    self.hit.append(i)
 
