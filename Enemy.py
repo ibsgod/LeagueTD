@@ -37,8 +37,9 @@ class Enemy:
 
         pygame.draw.rect(screen, (150, 0, 150), (int(self.x), int(self.y), self.width, self.height))
 
-    def tick(self, mousePos, click):
-        self.move()
+    def tick(self, mousePos, click, pause=False):
+        if not pause:
+            self.move()
         if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
             if click:
                 Info.selected = self
@@ -73,3 +74,6 @@ class Enemy:
             Info.enemies.remove(self)
             if Info.selected is self:
                 Info.selected = None
+            for i in Info.champions:
+                if self is i.target:
+                    i.target = None

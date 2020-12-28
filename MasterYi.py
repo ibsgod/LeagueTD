@@ -116,7 +116,7 @@ class MasterYi(Champion):
         if len(self.Qed) == 8:
             self.target.takeDamage(self.atk)
             self.attack += 1
-            if self.attack % 4 == 0:
+            if self.attack % 4 == 0 and self.target is not None:
                 self.target.takeDamage(self.atk)
     def useAbility(self):
         self.Qed.clear()

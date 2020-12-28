@@ -20,3 +20,4 @@ class Info:
     buttDict = {}
     be = 10
     summoning = None
+    playTime = 0

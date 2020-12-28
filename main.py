@@ -29,12 +29,19 @@ manaTimer = 0
 img = pygame.image.load("bg.png")
 Info.buttDict["Ashe"] = SummButton(0, 550, screen, Ashe)
 Info.buttDict["MasterYi"] = SummButton(150, 550, screen, MasterYi)
+currentTime = 0
+pauseTime = 0
+time = 0
+hovering = None
 def play():
     global mouse
     global mousePos
     global click
     global minSpawnTimer
     global manaTimer
+    global pauseTime
+    global time
+    global hovering
     while True:
         screen.fill((200, 30, 150))
         screen.blit(img, (0, 0))
@@ -45,25 +52,28 @@ def play():
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                startPause = pygame.time.get_ticks()
                 pause()
+                pauseTime += pygame.time.get_ticks() - startPause
+                currentTime = pygame.time.get_ticks()
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         deselect = click and mousePos[0] < 1050 and mousePos[1] < 550
-        if currentTime - minSpawnTimer > 1000:
+        if time - minSpawnTimer > 1000:
             Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30)
-            minSpawnTimer = currentTime
-        if currentTime - manaTimer > 3000:
+            minSpawnTimer = time
+        if time - manaTimer > 3000:
             for i in Info.champions:
                 if i.mana < i.maxmana:
                     i.mana += 1
-            manaTimer = currentTime
+            manaTimer = time
         for i in Info.champions:
             if i.tick(mousePos, click) == 2:
                 deselect = False
-            if i.target is not None and currentTime - Info.atkTimers[i] > i.atkspd * 1000:
+            if i.target is not None and time - Info.atkTimers[i] > i.atkspd * 1000:
                 i.fire()
-                Info.atkTimers[i] = currentTime
+                Info.atkTimers[i] = time
             for j in i.projects:
                 j.tick()
         for i in Info.enemies:
@@ -89,14 +99,18 @@ def play():
                 j.draw(screen)
         pygame.draw.rect(screen, (0, 0, 255), (0, 550, 1200, 100))
         drew = False
+        hovering = None
         for i in Info.buttDict:
-            if isinstance(Info.buttDict[i], SummButton) and Info.buttDict[i].tick(mousePos, click) >= 1:
-                sidebar.draw(screen, Info.buttDict[i].champy, hover=True)
-                Info.buttDict["sell"] = None
-                Info.buttDict["use"] = None
-                drew = True
-                if Info.buttDict[i].tick(mousePos, click) == 2:
-                    Info.summoning = Info.buttDict[i].Champ(mousePos[0], mousePos[1], summ=True)
+            if isinstance(Info.buttDict[i], SummButton):
+                val = Info.buttDict[i].tick(mousePos, click)
+                if val >= 1:
+                    sidebar.draw(screen, Info.buttDict[i].champy, hover=True)
+                    hovering = Info.buttDict[i].champy
+                    Info.buttDict["sell"] = None
+                    Info.buttDict["use"] = None
+                    drew = True
+                    if val == 2:
+                        Info.summoning = Info.buttDict[i].Champ(mousePos[0], mousePos[1], summ=True)
         if not drew and Info.summoning is None:
             sidebar.draw(screen, Info.selected)
         elif not drew:
@@ -111,6 +125,10 @@ def play():
                     if i == "sell":
                         Info.be += Info.selected.be
                         Info.champions.remove(Info.selected)
+                        Info.selected = None
+                        Info.buttDict["sell"] = None
+                        Info.buttDict["use"] = None
+                        break
         if Info.summoning is not None:
             valid = True
             for i in Info.pathareas:
@@ -123,57 +141,62 @@ def play():
                     Info.selected = Info.summoning.Champ(mousePos[0] - Info.summoning.size/2, mousePos[1] - Info.summoning.size/2)
                     Info.be -= Info.summoning.be
                     Info.summoning = None
+        pygame.draw.rect(screen, (0, 0, 255), (1050, 0, 250, 200))
+        time = (Info.playTime + currentTime - pauseTime)
         beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Blue Essence: " + str(Info.be), 1, (255, 255, 255))
+        timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Time Played: " + str(time // 60000).zfill(2) + ":" + str(time // 1000 % 60).zfill(2), 1, (255, 255, 255))
         screen.blit(beLbl, (1070, 20))
+        screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
         pygame.display.update()
         pygame.time.Clock().tick(60)
 
 def pause():
     global mouse
-    global click
     global mousePos
+    global click
+    global minSpawnTimer
+    global manaTimer
+    global time
+    global hovering
     while True:
         screen.fill((200, 30, 150))
         screen.blit(img, (0, 0))
         mousePos = pygame.mouse.get_pos()
+        click = False
         for event in pygame.event.get():
-            click = False
             if event.type == pygame.QUIT:
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                click = True
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                 return
-        for i in Info.champions:
-            i.draw(screen)
-            for j in i.projects:
-                j.draw()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                click = True
         # for i in Info.enemypath:
         #     pygame.draw.rect(screen, (255, 0, 0), (i[0] - 5, i[1] - 5, 10, 10))
         for i in Info.enemies:
             i.draw(screen)
+        for i in Info.champions:
+            i.draw(screen)
+            for j in i.projects:
+                j.draw(screen)
         pygame.draw.rect(screen, (0, 0, 255), (0, 550, 1200, 100))
-        sidebar.draw(screen, Info.selected)
+        if Info.summoning is None and hovering is None:
+            sidebar.draw(screen, Info.selected)
+        else:
+            sidebar.draw(screen, hovering, hover=True)
         for i in Info.buttDict:
             if Info.buttDict[i] is not None:
                 if Info.buttDict[i].tick(mousePos, click):
-                    if isinstance(Info.buttDict[i], SummButton):
-                        Info.summoning = Info.buttDict[i].Champ(mousePos[0], mousePos[1], summ=True)
-                    if i == "use" and Info.selected.mana >= Info.selected.actCost:
-                        Info.selected.actCd = (pygame.time.get_ticks(), Info.selected.actCd[1])
-                        Info.selected.mana -= Info.selected.actCost
-                        Info.selected.useAbility()
-        if Info.summoning is not None:
-            valid = True
-            for i in Info.buildareas:
-                if i.collidepoint(mousePos):
-                    valid = False
-            valid = valid and mousePos[0] < 1050 and mousePos[1] < 550
-            if valid:
-                Info.summoning.tick(mousePos, click)
-                Info.summoning.draw(screen)
+                    pass
+        pygame.draw.rect(screen, (0, 0, 255), (1050, 0, 250, 200))
+        beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Blue Essence: " + str(Info.be), 1,
+                                                                           (255, 255, 255))
+        timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
+            "Time Played: " + str(time // 60000).zfill(2) + ":" + str(time // 1000 % 60).zfill(2), 1, (255, 255, 255))
+        screen.blit(beLbl, (1070, 20))
+        screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
+        pygame.draw.rect(screen, (200, 200, 200), (width//2 - 250, height//2 - 150, 500, 300))
+        pauseLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render("Paused", 1, (255, 255, 255))
+        screen.blit(pauseLbl, ((width - pauseLbl.get_width()) // 2, (height - pauseLbl.get_height()) // 2))
         pygame.display.update()
-        pygame.time.Clock().tick(30)
-
-
+        pygame.time.Clock().tick(60)
 play()
