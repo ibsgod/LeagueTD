@@ -2,6 +2,7 @@ import sys
 
 import os
 import pygame
+import json
 
 from Ashe import Ashe
 from Button import Button
@@ -33,6 +34,19 @@ currentTime = 0
 pauseTime = 0
 time = 0
 hovering = None
+data = ""
+try:
+    with open("state.txt") as file:
+        data = json.load(file)
+except:
+    pass
+if len(data) > 0:
+    Info.be = data["be"]
+    Info.playTime = data["playTime"]
+    for i in data["champions"]:
+        eval(i["name"])(i["x"], i["y"], hp=i["hp"], mana=i["mana"])
+
+
 def play():
     global mouse
     global mousePos
@@ -50,7 +64,7 @@ def play():
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit()
+                exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                 startPause = pygame.time.get_ticks()
                 pause()
@@ -59,6 +73,8 @@ def play():
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
+        time = (Info.playTime + currentTime - pauseTime)
+        Info.acTime = time
         deselect = click and mousePos[0] < 1050 and mousePos[1] < 550
         if time - minSpawnTimer > 1000:
             Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30)
@@ -87,7 +103,8 @@ def play():
             Info.buttDict["sell"] = None
             Info.buttDict["use"] = None
         elif Info.buttDict["sell"] is None:
-            Info.buttDict["sell"] = Button(1125, 0, 100, 40, screen,label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Sell", 1, (255, 255, 255)))
+            Info.buttDict["sell"] = Button(1125, 0, 100, 40, screen,
+                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Sell", 1, (255, 255, 255)))
             Info.buttDict["use"] = Button(1075, 0, 200, 40, screen, ability=True)
         # for i in Info.enemypath:
         #     pygame.draw.rect(screen, (255, 0, 0), (i[0] - 5, i[1] - 5, 10, 10))
@@ -100,6 +117,7 @@ def play():
         pygame.draw.rect(screen, (0, 0, 255), (0, 550, 1200, 100))
         drew = False
         hovering = None
+        summClicked = False
         for i in Info.buttDict:
             if isinstance(Info.buttDict[i], SummButton):
                 val = Info.buttDict[i].tick(mousePos, click)
@@ -111,6 +129,7 @@ def play():
                     drew = True
                     if val == 2:
                         Info.summoning = Info.buttDict[i].Champ(mousePos[0], mousePos[1], summ=True)
+                        summClicked = True
         if not drew and Info.summoning is None:
             sidebar.draw(screen, Info.selected)
         elif not drew:
@@ -119,7 +138,7 @@ def play():
             if Info.buttDict[i] is not None:
                 if Info.buttDict[i].tick(mousePos, click):
                     if i == "use" and Info.selected.mana >= Info.selected.actCost and Info.selected.canUse:
-                        Info.selected.actCd = (pygame.time.get_ticks(), Info.selected.actCd[1])
+                        Info.selected.actCd = (time, Info.selected.actCd[1])
                         Info.selected.mana -= Info.selected.actCost
                         Info.selected.useAbility()
                     if i == "sell":
@@ -129,26 +148,30 @@ def play():
                         Info.buttDict["sell"] = None
                         Info.buttDict["use"] = None
                         break
-        if Info.summoning is not None:
+        if Info.summoning is not None and not summClicked:
             valid = True
             for i in Info.pathareas:
                 if i.collidepoint(mousePos):
                     valid = False
-            if mousePos[0] < 1050 and mousePos[1] < 550 and (valid and Info.summoning.ranged or not (valid or Info.summoning.ranged)):
-                Info.summoning.tick(mousePos, click)
-                Info.summoning.draw(screen)
-                if click:
-                    Info.selected = Info.summoning.Champ(mousePos[0] - Info.summoning.size/2, mousePos[1] - Info.summoning.size/2)
-                    Info.be -= Info.summoning.be
-                    Info.summoning = None
+            if mousePos[0] > 1050 or mousePos[1] > 550 or valid and Info.summoning.ranged or not (valid or Info.summoning.ranged):
+                    Info.summoning.tick(mousePos, click)
+                    Info.summoning.draw(screen)
+                    if click:
+                        if mousePos[0] < 1050 and mousePos[1] < 550:
+                            Info.selected = Info.summoning.Champ(mousePos[0] - Info.summoning.size / 2,
+                                                                 mousePos[1] - Info.summoning.size / 2)
+                            Info.be -= Info.summoning.be
+                        Info.summoning = None
         pygame.draw.rect(screen, (0, 0, 255), (1050, 0, 250, 200))
-        time = (Info.playTime + currentTime - pauseTime)
-        beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Blue Essence: " + str(Info.be), 1, (255, 255, 255))
-        timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Time Played: " + str(time // 60000).zfill(2) + ":" + str(time // 1000 % 60).zfill(2), 1, (255, 255, 255))
+        beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Blue Essence: " + str(Info.be), 1,
+                                                                           (255, 255, 255))
+        timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
+            "Time Played: " + str(time // 60000).zfill(2) + ":" + str(time // 1000 % 60).zfill(2), 1, (255, 255, 255))
         screen.blit(beLbl, (1070, 20))
         screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
         pygame.display.update()
         pygame.time.Clock().tick(60)
+
 
 def pause():
     global mouse
@@ -165,7 +188,7 @@ def pause():
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit()
+                exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                 return
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -194,9 +217,25 @@ def pause():
             "Time Played: " + str(time // 60000).zfill(2) + ":" + str(time // 1000 % 60).zfill(2), 1, (255, 255, 255))
         screen.blit(beLbl, (1070, 20))
         screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
-        pygame.draw.rect(screen, (200, 200, 200), (width//2 - 250, height//2 - 150, 500, 300))
+        pygame.draw.rect(screen, (200, 200, 200), (width // 2 - 250, height // 2 - 150, 500, 300))
         pauseLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render("Paused", 1, (255, 255, 255))
-        screen.blit(pauseLbl, ((width - pauseLbl.get_width()) // 2, (height - pauseLbl.get_height()) // 2))
+        screen.blit(pauseLbl, ((width - pauseLbl.get_width()) // 2, height // 2 - 120))
         pygame.display.update()
         pygame.time.Clock().tick(60)
+
+
+def exit():
+    global time
+    Info.playTime = time
+    datadic = {}
+    datadic["champions"] = []
+    for i in Info.champions:
+        datadic["champions"].append({"name": i.name.replace(" ", ""), "x": i.x, "y": i.y, "hp": i.hp, "mana": i.mana})
+    datadic["be"] = Info.be
+    datadic["playTime"] = Info.playTime
+    with open("state.txt", "w") as outfile:
+        outfile.seek(0)
+        json.dump(datadic, outfile)
+    sys.exit()
+
 play()

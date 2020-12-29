@@ -7,7 +7,7 @@ from Projectile import Projectile
 
 
 class Champion:
-    def __init__(self, x, y, summ, name, hp, mana, atk, atkrange, atkspd, be, ranged, img):
+    def __init__(self, x, y, summ, name, hp, mana, atk, atkrange, atkspd, be, ranged, img, block=0):
         self.x = x
         self.y = y
         self.name = name
@@ -29,6 +29,8 @@ class Champion:
         self.projects = []
         self.target = None
         self.summ = summ
+        self.block = block
+        self.blocked = []
 
 
     def rot_center(self, image, angle):
@@ -58,14 +60,17 @@ class Champion:
     def tick(self, mousePos, click):
         if not self.summ:
             self.target = None
+            self.blocked = []
             for i in Info.enemies:
                 if self.checkRange((self.cx, self.cy), self.atkrange, i.hitbox):
-                    if i.cx - self.cx != 0:
-                        self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
-                    if i.cx < self.cx:
-                        self.rot -= 180
-                    self.target = i
-                    break
+                    if self.target is None:
+                        if i.cx - self.cx != 0:
+                            self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+                        if i.cx < self.cx:
+                            self.rot -= 180
+                        self.target = i
+                    if len(self.blocked) < self.block:
+                        self.blocked.append(i)
             if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
                 if click:
                     Info.selected = self

@@ -6,7 +6,7 @@ from Projectile import Projectile
 
 
 class Ashe(Champion):
-    def __init__(self, x, y, summ=False):
+    def __init__(self, x, y, summ=False, hp=None, mana=None):
         super().__init__(x, y, summ, name="Ashe", hp=10, mana=10, atk=1, atkrange=200, atkspd=0.5, be=5, ranged=True, img="sudo.png")
         self.passName = "Frost Shot"
         self.passDesc = "Slows enemies hit by attacks"
@@ -19,6 +19,9 @@ class Ashe(Champion):
             Info.champions.append(self)
         Info.atkTimers[self] = pygame.time.get_ticks()
         self.canUse = True
+        if hp is not None:
+            self.hp = hp
+            self.mana = mana
 
     def fire(self):
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, name="Ashe"))

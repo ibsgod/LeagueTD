@@ -9,8 +9,8 @@ from Projectile import Projectile
 
 
 class MasterYi(Champion):
-    def __init__(self, x, y, summ=False):
-        super().__init__(x, y, summ, name="Master Yi", hp=10, mana=10, atk=1, atkrange=100, atkspd=0.3, be=5, ranged=False, img="sudo.png")
+    def __init__(self, x, y, summ=False, hp=None, mana=None):
+        super().__init__(x, y, summ, name="Master Yi", hp=10, mana=10, atk=1, atkrange=100, atkspd=0.3, be=5, ranged=False, block=3, img="sudo.png")
         self.passName = "Double Strike"
         self.passDesc = "Hits twice every 4th attack"
         self.actName = "Alpha Strike"
@@ -26,6 +26,9 @@ class MasterYi(Champion):
         self.Qline = None
         self.canUse = False
         self.attack = 0
+        if hp is not None:
+            self.hp = hp
+            self.mana = mana
 
     def draw(self, screen):
         tup = self.rot_center(pygame.transform.flip(self.img, False, self.rot >= 90 or self.rot <= -90), self.rot)
@@ -56,16 +59,19 @@ class MasterYi(Champion):
         if not self.summ:
             if len(self.Qed) == 8:
                 self.target = None
+                self.blocked = []
                 for i in Info.enemies:
                     if self.checkRange((self.cx, self.cy), self.atkrange*2, i.hitbox):
                         self.canUse = True
                     if self.checkRange((self.cx, self.cy), self.atkrange, i.hitbox):
-                        if i.cx - self.cx != 0:
-                            self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
-                        if i.cx < self.cx:
-                            self.rot -= 180
-                        self.target = i
-                        break
+                        if self.target is None:
+                            if i.cx - self.cx != 0:
+                                self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+                            if i.cx < self.cx:
+                                self.rot -= 180
+                            self.target = i
+                        if len(self.blocked) < self.block:
+                            self.blocked.append(i)
             if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
                 if click:
                     Info.selected = self
@@ -102,14 +108,19 @@ class MasterYi(Champion):
                     self.Qed.append(None)
             self.nextQ = pygame.time.get_ticks() + 100
         elif not self.summ:
+            self.blocked = []
             for i in Info.enemies:
                 if self.checkRange((self.cx, self.cy), self.atkrange, i.hitbox):
-                    if i.cx - self.cx != 0:
-                        self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
-                    if i.cx < self.cx:
-                        self.rot -= 180
-                    self.target = i
-                    break
+                    if self.checkRange((self.cx, self.cy), self.atkrange, i.hitbox):
+                        if self.target is None:
+                            if i.cx - self.cx != 0:
+                                self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+                            if i.cx < self.cx:
+                                self.rot -= 180
+                            self.target = i
+                        if len(self.blocked) < self.block:
+                            self.blocked.append(i)
+
 
 
     def fire(self):

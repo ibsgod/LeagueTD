@@ -21,3 +21,4 @@ class Info:
     be = 10
     summoning = None
     playTime = 0
+    acTime = 0

@@ -48,6 +48,9 @@ class Enemy:
         return
 
     def move(self):
+        for i in Info.champions:
+            if i.blocked is not None and self in i.blocked:
+                return
         newspeed = self.speed
         if self.slow[1] > pygame.time.get_ticks():
             newspeed *= self.slow[0]
