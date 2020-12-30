@@ -134,6 +134,12 @@ def play():
             sidebar.draw(screen, Info.selected)
         elif not drew:
             sidebar.draw(screen, Info.selected, hover=True)
+        pygame.draw.rect(screen, (0, 0, 255), (1050, 0, 250, 200))
+        beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Blue Essence: " + str(Info.be), 1,(255, 255, 255))
+        timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
+            "Time Played: " + str(time // 60000).zfill(2) + ":" + str(time // 1000 % 60).zfill(2), 1,(255, 255, 255))
+        screen.blit(beLbl, (1070, 20))
+        screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
         for i in Info.buttDict:
             if Info.buttDict[i] is not None:
                 if Info.buttDict[i].tick(mousePos, click):
@@ -148,6 +154,8 @@ def play():
                         Info.buttDict["sell"] = None
                         Info.buttDict["use"] = None
                         break
+                    if i == "quit":
+                        exit()
         if Info.summoning is not None and not summClicked:
             valid = True
             for i in Info.pathareas:
@@ -162,15 +170,13 @@ def play():
                                                                  mousePos[1] - Info.summoning.size / 2)
                             Info.be -= Info.summoning.be
                         Info.summoning = None
-        pygame.draw.rect(screen, (0, 0, 255), (1050, 0, 250, 200))
-        beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Blue Essence: " + str(Info.be), 1,
-                                                                           (255, 255, 255))
-        timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
-            "Time Played: " + str(time // 60000).zfill(2) + ":" + str(time // 1000 % 60).zfill(2), 1, (255, 255, 255))
-        screen.blit(beLbl, (1070, 20))
-        screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
+        if "quit" not in Info.buttDict.keys():
+            Info.buttDict["quit"] = Button(1070, 25 + beLbl.get_height() + timeLbl.get_height(), 100, 75, screen, color=(0, 0, 0),
+                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 20).render("Quit", 1, (255, 255, 255)))
+
         pygame.display.update()
         pygame.time.Clock().tick(60)
+
 
 
 def pause():

@@ -21,7 +21,8 @@ class MasterYi(Champion):
         if not summ:
             Info.champions.append(self)
         Info.atkTimers[self] = pygame.time.get_ticks()
-        self.Qed = [None] * 8
+        self.Qlim = 8
+        self.Qed = [None] * self.Qlim
         self.nextQ = 0
         self.Qline = None
         self.canUse = False
@@ -32,7 +33,7 @@ class MasterYi(Champion):
 
     def draw(self, screen):
         tup = self.rot_center(pygame.transform.flip(self.img, False, self.rot >= 90 or self.rot <= -90), self.rot)
-        if len(self.Qed) == 8:
+        if len(self.Qed) == self.Qlim:
             screen.blit(tup[0], tup[1])
         elif self.target is not None:
             # screen.blit(tup[0], (self.target.cx - self.size/2, self.target.cy - self.size/2))
@@ -57,7 +58,7 @@ class MasterYi(Champion):
     def tick(self, mousePos, click):
         self.canUse = False
         if not self.summ:
-            if len(self.Qed) == 8:
+            if len(self.Qed) == self.Qlim:
                 self.target = None
                 self.blocked = []
                 for i in Info.enemies:
@@ -82,7 +83,7 @@ class MasterYi(Champion):
             self.y = mousePos[1] - self.size/2
         self.cx = self.x + self.size / 2
         self.cy = self.y + self.size / 2
-        if len(self.Qed) < 8 and pygame.time.get_ticks() > self.nextQ:
+        if len(self.Qed) < self.Qlim and pygame.time.get_ticks() > self.nextQ:
             new = False
             for i in Info.enemies[:]:
                 if self.checkRange((self.cx, self.cy) if self.target == None else (self.target.cx, self.target.cy), self.atkrange*2, i.hitbox) and i not in self.Qed:
@@ -104,7 +105,7 @@ class MasterYi(Champion):
                 self.Qed.append(self.target)
             else:
                 self.target = None
-                while len(self.Qed) < 8:
+                while len(self.Qed) < self.Qlim:
                     self.Qed.append(None)
             self.nextQ = pygame.time.get_ticks() + 100
         elif not self.summ:
@@ -124,7 +125,7 @@ class MasterYi(Champion):
 
 
     def fire(self):
-        if len(self.Qed) == 8:
+        if len(self.Qed) == self.Qlim:
             self.target.takeDamage(self.atk)
             self.attack += 1
             if self.attack % 4 == 0 and self.target is not None:
