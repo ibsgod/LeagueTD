@@ -8,9 +8,12 @@ from Ashe import Ashe
 from Button import Button
 from Champion import Champion
 from Info import Info
+from Lulu import Lulu
 from MasterYi import MasterYi
 from Minion import Minion
+from Nasus import Nasus
 from Sidebar import Sidebar
+from Sona import Sona
 from SummButton import SummButton
 
 pygame.mixer.init()
@@ -30,6 +33,9 @@ manaTimer = 0
 img = pygame.image.load("bg.png")
 Info.buttDict["Ashe"] = SummButton(0, 550, screen, Ashe)
 Info.buttDict["MasterYi"] = SummButton(150, 550, screen, MasterYi)
+Info.buttDict["Sona"] = SummButton(300, 550, screen, Sona)
+Info.buttDict["Lulu"] = SummButton(450, 550, screen, Lulu)
+Info.buttDict["Nasus"] = SummButton(600, 550, screen, Nasus)
 currentTime = 0
 pauseTime = 0
 time = 0
@@ -76,7 +82,7 @@ def play():
         time = (Info.playTime + currentTime - pauseTime)
         Info.acTime = time
         deselect = click and mousePos[0] < 1050 and mousePos[1] < 550
-        if time - minSpawnTimer > 1000:
+        if time - minSpawnTimer > 500:
             Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30)
             minSpawnTimer = time
         if time - manaTimer > 3000:
@@ -93,6 +99,9 @@ def play():
             for j in i.projects:
                 j.tick()
         for i in Info.enemies:
+            if i.target is not None and time - Info.atkTimers[i] > i.atkspd * 1000 and (i.slow[0] > 0 or i.slow[1] < Info.acTime):
+                i.fire()
+                Info.atkTimers[i] = time
             if i.tick(mousePos, click) == 2:
                 deselect = False
         if deselect:
@@ -111,9 +120,18 @@ def play():
         for i in Info.enemies:
             i.draw(screen)
         for i in Info.champions:
+            if i.target is not None:
+                i.target.draw(screen)
+        for i in Info.champions:
             i.draw(screen)
             for j in i.projects:
                 j.draw(screen)
+        for i in Info.particles[:]:
+            pygame.draw.circle(screen, i[5], (int(i[0]), int(i[1])), i[4])
+            i[0] += i[2]
+            i[1] += i[3]
+            if i[6] < Info.acTime:
+                Info.particles.remove(i)
         pygame.draw.rect(screen, (0, 0, 255), (0, 550, 1200, 100))
         drew = False
         hovering = None
@@ -171,8 +189,8 @@ def play():
                             Info.be -= Info.summoning.be
                         Info.summoning = None
         if "quit" not in Info.buttDict.keys():
-            Info.buttDict["quit"] = Button(1070, 25 + beLbl.get_height() + timeLbl.get_height(), 100, 75, screen, color=(0, 0, 0),
-                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 20).render("Quit", 1, (255, 255, 255)))
+            Info.buttDict["quit"] = Button(1070, 30 + beLbl.get_height() + timeLbl.get_height(), 100, 100, screen,
+                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Quit", 1, (255, 255, 255)))
 
         pygame.display.update()
         pygame.time.Clock().tick(60)

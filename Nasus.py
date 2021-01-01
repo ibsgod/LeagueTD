@@ -1,43 +1,30 @@
 import math
+import random
 
 import pygame
 
+from Champion import Champion
 from Info import Info
-from Projectile import Projectile
 
 
-class Champion:
-    def __init__(self, x, y, summ, name, hp, mana, atk, atkrange, atkspd, be, ranged, img, block=0):
-        self.x = x
-        self.y = y
-        self.name = name
-        self.hp = hp
-        self.maxhp = hp
-        self.mana = mana
-        self.maxmana = mana
-        self.atk = atk
-        self.atkrange = atkrange
-        self.atkspd = atkspd
-        self.rot = 0
-        self.be = be
-        self.ranged = ranged
-        self.img = pygame.image.load(img)
-        self.size = self.img.get_width()
-        self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
-        self.cx = self.x + self.size / 2
-        self.cy = self.y + self.size / 2
-        self.projects = []
-        self.target = None
-        self.summ = summ
-        self.block = block
-        self.blocked = []
-        Info.atkTimers[self] = Info.acTime
-
-
-    def rot_center(self, image, angle):
-        rotated_image = pygame.transform.rotate(image, angle)
-        new_rect = rotated_image.get_rect(center=image.get_rect().center)
-        return rotated_image, (new_rect[0] + self.x, new_rect[1] + self.y)
+class Nasus(Champion):
+    def __init__(self, x, y, summ=False, hp=None, mana=None):
+        super().__init__(x, y, summ, name="Nasus", hp=10, mana=10, atk=1, atkrange=100, atkspd=1, be=5, ranged=False, block=4, img="sudo.png")
+        self.passName = "Soul Eater"
+        self.passDesc = "Gains HP when attacking"
+        self.actName = "Siphoning Strike"
+        self.actDesc = "Empowers next attack. Damage permanently increased if it kills enemy."
+        self.actCd = (0, 5)
+        self.actCost = 4
+        self.Champ = Nasus
+        if not summ:
+            Info.champions.append(self)
+        self.canUse = True
+        self.Q = False
+        self.Qbonus = 1
+        if hp is not None:
+            self.hp = hp
+            self.mana = mana
 
     def draw(self, screen):
         tup = self.rot_center(pygame.transform.flip(self.img, False, self.rot >= 90 or self.rot <= -90), self.rot)
@@ -83,38 +70,13 @@ class Champion:
         self.cx = self.x + self.size / 2
         self.cy = self.y + self.size / 2
 
+    def fire(self):
+        self.target.takeDamage(self.atk + (self.Qbonus if self.Q else 0))
+        self.hp = min(self.hp + 0.5 * (self.atk + (self.Qbonus if self.Q else 0)), self.maxhp)
+        self.Qbonus += (1 if self.Q and self.target is None else 0)
+        self.Q = False
 
 
-    def checkRange(self, pos, rad, rect):
-        distx = abs(pos[0] - rect.x - rect.width/2)
-        disty = abs(pos[1] - rect.y - rect.height/2)
-        if distx > (rect.width / 2 + rad):
-            return False
-        if disty > (rect.height / 2 + rad):
-            return False
-        if distx <= (rect.width / 2):
-            return True
-        if disty <= (rect.height / 2):
-            return True
-        cornerDistance_sq = (distx - rect.width / 2) ** 2 + (disty - rect.height / 2) ** 2
-        return (cornerDistance_sq <= (rad ** 2))
-
-    def takeDamage(self, dmg):
-        self.hp -= dmg
-        if self.hp <= 0:
-            Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
-            Info.champions.remove(self)
-            if Info.selected is self:
-                Info.selected = None
-            for i in Info.enemies:
-                if self is i.target:
-                    i.target = None
-
-
-
-
-
-
-
-
+    def useAbility(self):
+        self.Q = True
 

@@ -5,12 +5,11 @@ import pygame
 
 from Champion import Champion
 from Info import Info
-from Projectile import Projectile
 
 
 class MasterYi(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Master Yi", hp=10, mana=10, atk=1, atkrange=100, atkspd=0.3, be=5, ranged=False, block=3, img="sudo.png")
+        super().__init__(x, y, summ, name="Master Yi", hp=8, mana=10, atk=51, atkrange=100, atkspd=0.4, be=5, ranged=False, block=3, img="sudo.png")
         self.passName = "Double Strike"
         self.passDesc = "Hits twice every 4th attack"
         self.actName = "Alpha Strike"
@@ -20,7 +19,6 @@ class MasterYi(Champion):
         self.Champ = MasterYi
         if not summ:
             Info.champions.append(self)
-        Info.atkTimers[self] = pygame.time.get_ticks()
         self.Qlim = 8
         self.Qed = [None] * self.Qlim
         self.nextQ = 0
@@ -83,10 +81,10 @@ class MasterYi(Champion):
             self.y = mousePos[1] - self.size/2
         self.cx = self.x + self.size / 2
         self.cy = self.y + self.size / 2
-        if len(self.Qed) < self.Qlim and pygame.time.get_ticks() > self.nextQ:
+        if len(self.Qed) < self.Qlim and Info.acTime > self.nextQ:
             new = False
             for i in Info.enemies[:]:
-                if self.checkRange((self.cx, self.cy) if self.target == None else (self.target.cx, self.target.cy), self.atkrange*2, i.hitbox) and i not in self.Qed:
+                if self.checkRange((self.cx, self.cy) if self.target is None else (self.target.cx, self.target.cy), self.atkrange*2, i.hitbox) and i not in self.Qed:
                     self.target = i
                     if random.randint(1, 2) == 1:
                         self.Qline = (
@@ -101,13 +99,16 @@ class MasterYi(Champion):
                     new = True
                     break
             if new:
-                self.target.takeDamage(self.atk*2)
                 self.Qed.append(self.target)
             else:
                 self.target = None
                 while len(self.Qed) < self.Qlim:
                     self.Qed.append(None)
-            self.nextQ = pygame.time.get_ticks() + 100
+            if len(self.Qed) == self.Qlim:
+                for i in self.Qed[:]:
+                    if i is not None:
+                        i.takeDamage(self.atk*2)
+            self.nextQ = Info.acTime + 100
         elif not self.summ:
             self.blocked = []
             for i in Info.enemies:
@@ -122,7 +123,18 @@ class MasterYi(Champion):
                         if len(self.blocked) < self.block:
                             self.blocked.append(i)
 
-
+    def takeDamage(self, dmg):
+        if len(self.Qed) < self.Qlim:
+            return
+        self.hp -= dmg
+        if self.hp <= 0:
+            Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
+            Info.champions.remove(self)
+            if Info.selected is self:
+                Info.selected = None
+            for i in Info.enemies:
+                if self is i.target:
+                    i.target = None
 
     def fire(self):
         if len(self.Qed) == self.Qlim:
@@ -130,6 +142,7 @@ class MasterYi(Champion):
             self.attack += 1
             if self.attack % 4 == 0 and self.target is not None:
                 self.target.takeDamage(self.atk)
+
     def useAbility(self):
         self.Qed.clear()
 

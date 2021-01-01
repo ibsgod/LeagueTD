@@ -41,7 +41,10 @@ class Projectile:
         for i in Info.enemies:
             if i.hitbox.colliderect(self.hitbox) and i not in self.hit:
                 if self.name == "Ashe":
-                    i.slow = (0.5, pygame.time.get_ticks() + 3000)
+                    i.cripple((0.5, Info.acTime + 3000))
+                if self.name == "Sona":
+                    i.cripple((0, Info.acTime + 3000))
+
                 i.takeDamage(self.tower.atk * self.atk)
                 if not self.pen:
                     self.tower.projects.remove(self)

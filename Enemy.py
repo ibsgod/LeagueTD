@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 from Info import Info
@@ -23,6 +25,9 @@ class Enemy:
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         self.flip = False
         self.slow = (0, 0)
+        self.target = None
+        self.colour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        Info.atkTimers[self] = Info.acTime
 
     def draw(self, screen):
         # screen.blit(pygame.transform.flip(self.img, self.flip, False), (int(self.x), int(self.y)))
@@ -35,7 +40,7 @@ class Enemy:
                          self.x + (self.size - maxbar.get_width()) / 2, self.y - 15,
                          max(0, maxbar.get_width() / self.maxhp * self.hp), 5))
 
-        pygame.draw.rect(screen, (150, 0, 150), (int(self.x), int(self.y), self.width, self.height))
+        pygame.draw.rect(screen, self.colour, (int(self.x), int(self.y), self.width, self.height))
 
     def tick(self, mousePos, click, pause=False):
         if not pause:
@@ -48,11 +53,13 @@ class Enemy:
         return
 
     def move(self):
+        self.target = None
         for i in Info.champions:
             if i.blocked is not None and self in i.blocked:
+                self.target = i
                 return
         newspeed = self.speed
-        if self.slow[1] > pygame.time.get_ticks():
+        if self.slow[1] > Info.acTime:
             newspeed *= self.slow[0]
         if self.path < len(Info.enemypath):
             if self.cx != Info.enemypath[self.path][0]:
@@ -74,9 +81,18 @@ class Enemy:
     def takeDamage(self, dmg):
         self.hp -= dmg
         if self.hp <= 0:
+            Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
             Info.enemies.remove(self)
             if Info.selected is self:
                 Info.selected = None
             for i in Info.champions:
                 if self is i.target:
                     i.target = None
+
+    def fire(self):
+        self.target.takeDamage(self.atk)
+
+    def cripple(self, crip):
+        if crip[0] < self.slow[0] or crip[0] == self.slow[0] and crip[1] > self.slow[1]:
+            self.slow = crip
+

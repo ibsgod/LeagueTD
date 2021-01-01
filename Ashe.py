@@ -17,7 +17,6 @@ class Ashe(Champion):
         self.Champ = Ashe
         if not summ:
             Info.champions.append(self)
-        Info.atkTimers[self] = pygame.time.get_ticks()
         self.canUse = True
         if hp is not None:
             self.hp = hp
