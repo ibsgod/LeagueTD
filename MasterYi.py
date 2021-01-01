@@ -9,7 +9,7 @@ from Info import Info
 
 class MasterYi(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Master Yi", hp=8, mana=10, atk=51, atkrange=100, atkspd=0.4, be=5, ranged=False, block=3, img="sudo.png")
+        super().__init__(x, y, summ, name="Master Yi", hp=8, mana=10, atk=1, atkrange=100, atkspd=0.4, be=5, ranged=False, block=3, img="sudo.png")
         self.passName = "Double Strike"
         self.passDesc = "Hits twice every 4th attack"
         self.actName = "Alpha Strike"
@@ -71,6 +71,9 @@ class MasterYi(Champion):
                             self.target = i
                         if len(self.blocked) < self.block:
                             self.blocked.append(i)
+            self.cx = self.x + self.size / 2
+            self.cy = self.y + self.size / 2
+            self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
             if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
                 if click:
                     Info.selected = self
@@ -79,8 +82,6 @@ class MasterYi(Champion):
         else:
             self.x = mousePos[0] - self.size/2
             self.y = mousePos[1] - self.size/2
-        self.cx = self.x + self.size / 2
-        self.cy = self.y + self.size / 2
         if len(self.Qed) < self.Qlim and Info.acTime > self.nextQ:
             new = False
             for i in Info.enemies[:]:
@@ -122,13 +123,17 @@ class MasterYi(Champion):
                             self.target = i
                         if len(self.blocked) < self.block:
                             self.blocked.append(i)
+        self.cx = self.x + self.size / 2
+        self.cy = self.y + self.size / 2
+        self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
+
 
     def takeDamage(self, dmg):
         if len(self.Qed) < self.Qlim:
             return
         self.hp -= dmg
         if self.hp <= 0:
-            Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
+            Info.dieEffect(self.cx, self.y + self.size, 2, (0, 255, 255))
             Info.champions.remove(self)
             if Info.selected is self:
                 Info.selected = None

@@ -13,6 +13,7 @@ from MasterYi import MasterYi
 from Minion import Minion
 from Nasus import Nasus
 from Sidebar import Sidebar
+from Singed import Singed
 from Sona import Sona
 from SummButton import SummButton
 
@@ -36,6 +37,7 @@ Info.buttDict["MasterYi"] = SummButton(150, 550, screen, MasterYi)
 Info.buttDict["Sona"] = SummButton(300, 550, screen, Sona)
 Info.buttDict["Lulu"] = SummButton(450, 550, screen, Lulu)
 Info.buttDict["Nasus"] = SummButton(600, 550, screen, Nasus)
+Info.buttDict["Singed"] = SummButton(750, 550, screen, Singed)
 currentTime = 0
 pauseTime = 0
 time = 0
@@ -50,7 +52,10 @@ if len(data) > 0:
     Info.be = data["be"]
     Info.playTime = data["playTime"]
     for i in data["champions"]:
-        eval(i["name"])(i["x"], i["y"], hp=i["hp"], mana=i["mana"])
+        c = eval(i["name"])(i["x"], i["y"], hp=i["hp"], mana=i["mana"])
+        if i["name"] == "Nasus":
+            print(i["Qbonus"])
+            c.Qbonus = i["Qbonus"]
 
 
 def play():
@@ -82,7 +87,7 @@ def play():
         time = (Info.playTime + currentTime - pauseTime)
         Info.acTime = time
         deselect = click and mousePos[0] < 1050 and mousePos[1] < 550
-        if time - minSpawnTimer > 500:
+        if time - minSpawnTimer > 1000:
             Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30)
             minSpawnTimer = time
         if time - manaTimer > 3000:
@@ -99,9 +104,10 @@ def play():
             for j in i.projects:
                 j.tick()
         for i in Info.enemies:
-            if i.target is not None and time - Info.atkTimers[i] > i.atkspd * 1000 and (i.slow[0] > 0 or i.slow[1] < Info.acTime):
-                i.fire()
+            if time - Info.atkTimers[i] > i.atkspd * 1000:
                 Info.atkTimers[i] = time
+                if (i.slow[0] > 0 or i.slow[1] < Info.acTime) and i.target is not None:
+                    i.fire()
             if i.tick(mousePos, click) == 2:
                 deselect = False
         if deselect:
@@ -115,8 +121,6 @@ def play():
             Info.buttDict["sell"] = Button(1125, 0, 100, 40, screen,
                                            label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Sell", 1, (255, 255, 255)))
             Info.buttDict["use"] = Button(1075, 0, 200, 40, screen, ability=True)
-        # for i in Info.enemypath:
-        #     pygame.draw.rect(screen, (255, 0, 0), (i[0] - 5, i[1] - 5, 10, 10))
         for i in Info.enemies:
             i.draw(screen)
         for i in Info.champions:
@@ -132,6 +136,9 @@ def play():
             i[1] += i[3]
             if i[6] < Info.acTime:
                 Info.particles.remove(i)
+        for i in Info.poison:
+            for j in Info.poison[i][:]:
+                j.tick(screen)
         pygame.draw.rect(screen, (0, 0, 255), (0, 550, 1200, 100))
         drew = False
         hovering = None
@@ -184,9 +191,11 @@ def play():
                     Info.summoning.draw(screen)
                     if click:
                         if mousePos[0] < 1050 and mousePos[1] < 550:
-                            Info.selected = Info.summoning.Champ(mousePos[0] - Info.summoning.size / 2,
-                                                                 mousePos[1] - Info.summoning.size / 2)
+                            Info.selected = Info.summoning.Champ(Info.summoning.x,
+                                                                 Info.summoning.y)
                             Info.be -= Info.summoning.be
+                        else:
+                            Info.selected = None
                         Info.summoning = None
         if "quit" not in Info.buttDict.keys():
             Info.buttDict["quit"] = Button(1070, 30 + beLbl.get_height() + timeLbl.get_height(), 100, 100, screen,
@@ -255,6 +264,8 @@ def exit():
     datadic["champions"] = []
     for i in Info.champions:
         datadic["champions"].append({"name": i.name.replace(" ", ""), "x": i.x, "y": i.y, "hp": i.hp, "mana": i.mana})
+        if i.name == "Nasus":
+            datadic["champions"][len(datadic["champions"])-1]["Qbonus"] = i.Qbonus
     datadic["be"] = Info.be
     datadic["playTime"] = Info.playTime
     with open("state.txt", "w") as outfile:

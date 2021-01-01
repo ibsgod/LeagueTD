@@ -72,6 +72,9 @@ class Champion:
                         self.target = i
                     if len(self.blocked) < self.block:
                         self.blocked.append(i)
+            self.cx = self.x + self.size / 2
+            self.cy = self.y + self.size / 2
+            self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
             if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
                 if click:
                     Info.selected = self
@@ -82,6 +85,7 @@ class Champion:
             self.y = mousePos[1] - self.size/2
         self.cx = self.x + self.size / 2
         self.cy = self.y + self.size / 2
+        self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
 
 
 
@@ -102,7 +106,7 @@ class Champion:
     def takeDamage(self, dmg):
         self.hp -= dmg
         if self.hp <= 0:
-            Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
+            Info.dieEffect(self.cx, self.y + self.size, 2, (0, 255, 255))
             Info.champions.remove(self)
             if Info.selected is self:
                 Info.selected = None
