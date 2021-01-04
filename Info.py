@@ -20,7 +20,7 @@ class Info:
     acTime = 0
     particles = []
     poison = {}
-    po = 4
+    rounds = 1
     def dieEffect(x, y, size, colour):
         for i in range(50):
             Info.particles.append([random.randint(x - 10 * size, x + 10 * size),

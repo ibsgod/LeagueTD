@@ -29,7 +29,6 @@ click = False
 mouse = False
 mousePos = None
 sidebar = Sidebar()
-minSpawnTimer = 0
 manaTimer = 0
 img = pygame.image.load("bg.png")
 Info.buttDict["Ashe"] = SummButton(0, 550, screen, Ashe)
@@ -38,11 +37,18 @@ Info.buttDict["Sona"] = SummButton(300, 550, screen, Sona)
 Info.buttDict["Lulu"] = SummButton(450, 550, screen, Lulu)
 Info.buttDict["Nasus"] = SummButton(600, 550, screen, Nasus)
 Info.buttDict["Singed"] = SummButton(750, 550, screen, Singed)
+Info.rounds = 1
 currentTime = 0
 pauseTime = 0
 time = 0
 hovering = None
 data = ""
+playing = False
+startPause = 0
+roundLine = 0
+currIter = 0
+nextTime = 0
+startLine = 0
 try:
     with open("state.txt") as file:
         data = json.load(file)
@@ -51,12 +57,18 @@ except:
 if len(data) > 0:
     Info.be = data["be"]
     Info.playTime = data["playTime"]
+    Info.rounds = data["rounds"]
     for i in data["champions"]:
         c = eval(i["name"])(i["x"], i["y"], hp=i["hp"], mana=i["mana"])
         if i["name"] == "Nasus":
-            print(i["Qbonus"])
             c.Qbonus = i["Qbonus"]
-
+roundInfo = None
+with open("rounds.txt") as file:
+    roundInfo = file.readlines()
+    space = lambda x: x.split(' ')
+    removeNewLine = lambda x: x.replace('\n', '')
+    roundInfo = list(map(removeNewLine, roundInfo))
+    roundInfo = list(map(space, roundInfo))
 
 def play():
     global mouse
@@ -67,6 +79,12 @@ def play():
     global pauseTime
     global time
     global hovering
+    global playing
+    global startPause
+    global currIter
+    global nextTime
+    global roundLine
+    global startLine
     while True:
         screen.fill((200, 30, 150))
         screen.blit(img, (0, 0))
@@ -77,9 +95,11 @@ def play():
             if event.type == pygame.QUIT:
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
-                startPause = pygame.time.get_ticks()
+                if playing:
+                    startPause = pygame.time.get_ticks()
                 pause()
-                pauseTime += pygame.time.get_ticks() - startPause
+                if playing:
+                    pauseTime += pygame.time.get_ticks() - startPause
                 currentTime = pygame.time.get_ticks()
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -87,9 +107,25 @@ def play():
         time = (Info.playTime + currentTime - pauseTime)
         Info.acTime = time
         deselect = click and mousePos[0] < 1050 and mousePos[1] < 550
-        if time - minSpawnTimer > 1000:
-            Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30)
-            minSpawnTimer = time
+        if playing and Info.acTime > nextTime and roundInfo[roundLine][0] != '-':
+            if roundInfo[roundLine][0] == "m":
+                Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, float(roundInfo[roundLine][1]))
+            currIter += 1
+            if currIter == int(roundInfo[roundLine][3]):
+                currIter = 0
+                nextTime = Info.acTime + float(roundInfo[roundLine][4]) * 1000
+                roundLine += 1
+            else:
+                nextTime = Info.acTime + float(roundInfo[roundLine][2]) * 1000
+        elif playing and len(Info.enemies) == 0 and len(Info.particles) == 0:
+            playing = False
+            nextTime = Info.acTime
+            roundLine += 1
+            Info.rounds += 1
+            startPause = Info.acTime
+            startLine = roundLine
+
+
         if time - manaTimer > 3000:
             for i in Info.champions:
                 if i.mana < i.maxmana:
@@ -143,6 +179,8 @@ def play():
         drew = False
         hovering = None
         summClicked = False
+        if playing:
+            Info.buttDict["start"] = None
         for i in Info.buttDict:
             if isinstance(Info.buttDict[i], SummButton):
                 val = Info.buttDict[i].tick(mousePos, click)
@@ -163,8 +201,11 @@ def play():
         beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Blue Essence: " + str(Info.be), 1,(255, 255, 255))
         timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
             "Time Played: " + str(time // 60000).zfill(2) + ":" + str(time // 1000 % 60).zfill(2), 1,(255, 255, 255))
+        roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 40).render(
+            "Round " + str(Info.rounds), 1, (255, 255, 255))
         screen.blit(beLbl, (1070, 20))
         screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
+        screen.blit(roundLbl, (1070,  30 + beLbl.get_height() + timeLbl.get_height()))
         for i in Info.buttDict:
             if Info.buttDict[i] is not None:
                 if Info.buttDict[i].tick(mousePos, click):
@@ -181,6 +222,10 @@ def play():
                         break
                     if i == "quit":
                         exit()
+                    if i == "start":
+                        playing = True
+        if not playing:
+            pauseTime = pygame.time.get_ticks() - startPause
         if Info.summoning is not None and not summClicked:
             valid = True
             for i in Info.pathareas:
@@ -198,8 +243,11 @@ def play():
                             Info.selected = None
                         Info.summoning = None
         if "quit" not in Info.buttDict.keys():
-            Info.buttDict["quit"] = Button(1070, 30 + beLbl.get_height() + timeLbl.get_height(), 100, 100, screen,
+            Info.buttDict["quit"] = Button(1070, 80 + beLbl.get_height() + timeLbl.get_height(), 70, 50, screen,
                                            label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Quit", 1, (255, 255, 255)))
+        if "start" not in Info.buttDict.keys() or Info.buttDict["start"] is None and not playing:
+            Info.buttDict["start"] = Button(1160, 80 + beLbl.get_height() + timeLbl.get_height(), 130, 50, screen,
+                                            label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Start Round", 1, (255, 255, 255)), color=(0, 200, 0))
 
         pygame.display.update()
         pygame.time.Clock().tick(60)
@@ -268,9 +316,10 @@ def exit():
             datadic["champions"][len(datadic["champions"])-1]["Qbonus"] = i.Qbonus
     datadic["be"] = Info.be
     datadic["playTime"] = Info.playTime
+    datadic["rounds"] = Info.rounds
     with open("state.txt", "w") as outfile:
         outfile.seek(0)
-        json.dump(datadic, outfile)
+        # json.dump(datadic, outfile)
     sys.exit()
 
 play()

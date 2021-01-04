@@ -100,7 +100,7 @@ class Singed(Champion):
                     if len(self.blocked) < self.block:
                         self.blocked.append(i)
             Info.poison[str(id(self))].append(Poison(self.cx, self.cy + 10,
-                  random.randint(-10, -10) / 10,
+                  random.randint(-10, 3) / 10 * -self.dir,
                   random.randint(-10, 3) / 10,
                   random.randint(5, 10), (
                       150 + random.randint(-10, 10),

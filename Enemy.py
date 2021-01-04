@@ -35,8 +35,8 @@ class Enemy:
         maxbar.set_alpha(80)
         maxbar.fill((0, 0, 0))
         screen.blit(maxbar, (self.x + (self.size - maxbar.get_width()) / 2, self.y - 15))
-        pygame.draw.rect(screen, (min(255, int((self.maxhp - self.hp) * 255 / (self.maxhp - 1))),
-                                  max(0, int(255 - (self.maxhp - self.hp) * 255 / (self.maxhp - 1))), 0), (
+        pygame.draw.rect(screen, (min(255, int((self.maxhp - self.hp) * 255 / (self.maxhp))),
+                                  max(0, int(255 - (self.maxhp - self.hp) * 255 / (self.maxhp))), 0), (
                          self.x + (self.size - maxbar.get_width()) / 2, self.y - 15,
                          max(0, maxbar.get_width() / self.maxhp * self.hp), 5))
 

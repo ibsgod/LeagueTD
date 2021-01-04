@@ -1,1 +1,0 @@
-{"champions": [{"name": "Nasus", "x": 545.0, "y": 232.0, "hp": 5.5, "mana": 4, "Qbonus": 7}], "be": 955, "playTime": 489844}
