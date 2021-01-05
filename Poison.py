@@ -20,7 +20,8 @@ class Poison:
         self.x += self.xvel
         self.y += self.yvel
         if self.dur < Info.acTime:
-            Info.poison[str(id(self.tower))].remove(self)
+            Info.poison.remove(self)
+            return
         for i in Info.enemies:
             if i not in self.hit and i.hitbox.collidepoint(self.x+self.size/2, self.y+self.size/2):
                 self.hit.append(i)

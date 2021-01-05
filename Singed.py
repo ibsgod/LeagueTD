@@ -15,8 +15,8 @@ class Singed(Champion):
         self.passDesc = "Farts so bad it hurts enemies"
         self.actName = "Sanik"
         self.actDesc = "Runs this shit like cardio"
-        self.actCd = (0, 5)
-        self.actCost = 4
+        self.actCd = (0, 0.5)
+        self.actCost = 0.05
         self.Champ = Singed
         if not summ:
             Info.champions.append(self)
@@ -38,12 +38,14 @@ class Singed(Champion):
         self.cx = self.x + self.size / 2
         self.cy = self.y + self.size / 2
         self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
-        Info.poison[str(id(self))] = []
+        Info.poison = []
 
         
     def draw(self, screen):
-        tup = self.rot_center(pygame.transform.flip(self.img, False, self.rot >= 90 or self.rot <= -90), self.rot)
-        screen.blit(tup[0], tup[1])
+        if not self.running:
+            screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
+        else:
+            screen.blit(pygame.transform.flip(self.img, self.dir == 1 and self.path > 0,  False), (self.x, self.y))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange, 5)
         if not self.summ:
@@ -68,7 +70,10 @@ class Singed(Champion):
             self.dir = -1
         if self.path == 1:
             self.dir = 1
-        if self.running:
+        if self.mana <= 0:
+            self.running = False
+        if self.running and Info.playing:
+            self.mana = max(0, self.mana-0.05)
             if self.cx != Info.enemypath[self.path][0]:
                 if abs(Info.enemypath[self.path][0] - (self.cx)) > self.speed:
                     self.x += self.speed * (Info.enemypath[self.path][0] - (self.cx)) / abs(
@@ -99,16 +104,17 @@ class Singed(Champion):
                         self.target = i
                     if len(self.blocked) < self.block:
                         self.blocked.append(i)
-            Info.poison[str(id(self))].append(Poison(self.cx, self.cy + 10,
-                  random.randint(-10, 3) / 10 * -self.dir,
-                  random.randint(-10, 3) / 10,
-                  random.randint(5, 10), (
-                      150 + random.randint(-10, 10),
-                      0 + random.randint(0, 10),
-                      150 + random.randint(-10, 10)),
-                  Info.acTime + random.randint(500, 1500), self))
-            if len(Info.poison[str(id(self))]) > 70:
-                Info.poison[str(id(self))].remove(Info.poison[str(id(self))].get(0))
+            if Info.playing:
+                Info.poison.append(Poison(self.cx, self.cy + 10,
+                      random.randint(-10, 3) / 10 * -self.dir,
+                      random.randint(-10, 3) / 10,
+                      random.randint(5, 10), (
+                          150 + random.randint(-10, 10),
+                          0 + random.randint(0, 10),
+                          150 + random.randint(-10, 10)),
+                      Info.acTime + random.randint(500, 1500), self))
+                if len(Info.poison) > 70:
+                    Info.poison.remove(Info.poison[0])
             if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
                 if click:
                     Info.selected = self

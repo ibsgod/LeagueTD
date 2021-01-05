@@ -18,6 +18,7 @@ class Champion:
         self.atk = atk
         self.atkrange = atkrange
         self.atkspd = atkspd
+        self.oriatkspd = atkspd
         self.rot = 0
         self.be = be
         self.ranged = ranged
@@ -34,14 +35,8 @@ class Champion:
         Info.atkTimers[self] = Info.acTime
 
 
-    def rot_center(self, image, angle):
-        rotated_image = pygame.transform.rotate(image, angle)
-        new_rect = rotated_image.get_rect(center=image.get_rect().center)
-        return rotated_image, (new_rect[0] + self.x, new_rect[1] + self.y)
-
     def draw(self, screen):
-        tup = self.rot_center(pygame.transform.flip(self.img, False, self.rot >= 90 or self.rot <= -90), self.rot)
-        screen.blit(tup[0], tup[1])
+        screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange, 5)
         if not self.summ:

@@ -28,8 +28,7 @@ class Nasus(Champion):
 
     def draw(self, screen):
         self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Damage permanently increased if it kills enemy."
-        tup = self.rot_center(pygame.transform.flip(self.img, False, self.rot >= 90 or self.rot <= -90), self.rot)
-        screen.blit(tup[0], tup[1])
+        screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange, 5)
         if not self.summ:

@@ -82,7 +82,8 @@ class Enemy:
         self.hp -= dmg
         if self.hp <= 0:
             Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
-            Info.enemies.remove(self)
+            if self in Info.enemies:
+                Info.enemies.remove(self)
             if Info.selected is self:
                 Info.selected = None
             for i in Info.champions:

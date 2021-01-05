@@ -16,11 +16,11 @@ class Info:
     buttDict = {}
     be = 1000
     summoning = None
-    playTime = 0
     acTime = 0
     particles = []
-    poison = {}
+    poison = []
     rounds = 1
+    playing = False
     def dieEffect(x, y, size, colour):
         for i in range(50):
             Info.particles.append([random.randint(x - 10 * size, x + 10 * size),

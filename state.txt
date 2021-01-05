@@ -1,0 +1,1 @@
+{"champions": [{"name": "Singed", "x": 359.0, "y": 82.0, "hp": 11, "mana": 1.89999999999999}, {"name": "Sona", "x": 193.0, "y": 258.0, "hp": 10, "mana": 10}], "be": 990, "acTime": 35083, "rounds": 2, "startLine": 3}

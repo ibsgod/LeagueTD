@@ -59,5 +59,29 @@ class Sona(Champion):
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self))
 
     def useAbility(self):
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, pen=True, atk=2, speed=40, name="Sona"))
+        angles = []
+        for i in Info.enemies:
+            pee = 0
+            if i.cx - self.cx != 0:
+                pee = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+            if i.cx < self.cx:
+                pee -= 180
+            angles.append(pee)
+        angles.sort()
+        angles += angles
+        start = 0
+        end = 0
+        tot = 0
+        maxx = (0, 0)
+        while start < len(angles) / 2 and end < len(angles):
+            if min(angles[end] - angles[start], 360 - angles[start] + angles[end]) <= 15:
+                tot += 1
+                end += 1
+                if tot > maxx[0]:
+                    maxx = (tot, angles[start])
+            else:
+                tot -= 1
+                start += 1
+        self.rot = angles[start]
+        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, pen=True, atk=2, speed=60, name="Sona"))
 

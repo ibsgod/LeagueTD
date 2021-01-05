@@ -45,7 +45,7 @@ class Lulu(Champion):
                     return 2
                 return 1
             for i in Info.champions:
-                if i not in self.boosted:
+                if i not in self.boosted and i.atkspd == i.oriatkspd:
                     i.atkspd /= 1.5
                     self.boosted.append(i)
         else:

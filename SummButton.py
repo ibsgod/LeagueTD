@@ -26,7 +26,7 @@ class SummButton:
             maxbar.set_alpha(20)
             maxbar.fill((255, 255, 255))
             self.screen.blit(maxbar, (self.coll.x, self.coll.y))
-            if click and Info.be >= self.champy.be:
+            if click and not has and Info.be >= self.champy.be:
                 return 2
             return 1
         return 0

@@ -30,9 +30,8 @@ class MasterYi(Champion):
             self.mana = mana
 
     def draw(self, screen):
-        tup = self.rot_center(pygame.transform.flip(self.img, False, self.rot >= 90 or self.rot <= -90), self.rot)
         if len(self.Qed) == self.Qlim:
-            screen.blit(tup[0], tup[1])
+            screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         elif self.target is not None:
             # screen.blit(tup[0], (self.target.cx - self.size/2, self.target.cy - self.size/2))
              pygame.draw.line(screen, (255, 255, 0), self.Qline[0], self.Qline[1], 5)
