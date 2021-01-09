@@ -6,7 +6,7 @@ from Info import Info
 
 
 class Enemy:
-    def __init__(self, x, y, name, hp, atk, atkspd, speed, img):
+    def __init__(self, x, y, name, hp, atk, atkspd, speed, img, atkrange=80):
         self.x = x
         self.y = y
         self.name = name
@@ -17,20 +17,24 @@ class Enemy:
         self.speed = speed
         self.img = pygame.image.load(img)
         self.path = 1
-        self.width = 60
-        self.height = 60
-        self.size = 60
+        self.width = self.img.get_width()
+        self.height = self.img.get_width()
+        self.size = self.img.get_width()
         self.cx = self.x + self.width/2
         self.cy = self.y + self.height/2
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         self.flip = False
-        self.slow = (0, 0)
+        self.slow = (1, 0)
         self.target = None
+        self.projects = []
+        self.atkrange = atkrange
         self.colour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         Info.atkTimers[self] = Info.acTime
 
     def draw(self, screen):
-        # screen.blit(pygame.transform.flip(self.img, self.flip, False), (int(self.x), int(self.y)))
+        screen.blit(pygame.transform.flip(self.img, self.flip, False), (int(self.x), int(self.y)))
+        if Info.selected is self:
+            pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+10, 5)
         maxbar = pygame.Surface((self.size, 5))
         maxbar.set_alpha(80)
         maxbar.fill((0, 0, 0))
@@ -40,10 +44,15 @@ class Enemy:
                          self.x + (self.size - maxbar.get_width()) / 2, self.y - 15,
                          max(0, maxbar.get_width() / self.maxhp * self.hp), 5))
 
-        pygame.draw.rect(screen, self.colour, (int(self.x), int(self.y), self.width, self.height))
-
-    def tick(self, mousePos, click, pause=False):
-        if not pause:
+    def tick(self, mousePos, click):
+        yes = False
+        self.target = None
+        for i in Info.champions:
+            if i.blocked is not None and self in i.blocked:
+                self.target = i
+                yes = True
+                break
+        if not yes:
             self.move()
         if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
             if click:
@@ -53,11 +62,6 @@ class Enemy:
         return
 
     def move(self):
-        self.target = None
-        for i in Info.champions:
-            if i.blocked is not None and self in i.blocked:
-                self.target = i
-                return
         newspeed = self.speed
         if self.slow[1] > Info.acTime:
             newspeed *= self.slow[0]

@@ -27,10 +27,11 @@ class Sidebar:
             manaLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 20).render(
                 '{0:.3g}'.format(selected.mana) + " / " + str(selected.maxmana), 1, (255, 255, 255))
             screen.blit(manaLbl, ((1175 - manaLbl.get_width() / 2, 273)))
-        y = self.drawText(screen, "Attack: " + '{0:.3g}'.format(selected.atk), (255, 255, 255),
-                          pygame.Rect(1065, 310, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))
-        y = self.drawText(screen, "Attack speed: " + '{0:.3g}'.format(1/selected.atkspd), (255, 255, 255),
-                          pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))
+        if hasattr(selected, "atk"):
+            y = self.drawText(screen, "Attack: " + '{0:.3g}'.format(selected.atk), (255, 255, 255),
+                              pygame.Rect(1065, 310, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))
+            y = self.drawText(screen, "Attack speed: " + '{0:.3g}'.format(1/selected.atkspd), (255, 255, 255),
+                              pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))
         if hasattr(selected, "passDesc"):
             y = self.drawText(screen, selected.passName + " - Passive: " + selected.passDesc, (255, 255, 255),
                      pygame.Rect(1065, y + 10, 220, 300), pygame.font.SysFont("Microsoft Yahei UI Light", 27))

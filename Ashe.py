@@ -9,7 +9,7 @@ from Projectile import Projectile
 
 class Ashe(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Ashe", hp=10, mana=10, atk=1, atkrange=200, atkspd=0.5, be=5, ranged=True, img="sudo.png")
+        super().__init__(x, y, summ, name="Ashe", hp=10, mana=10, atk=1, atkrange=200, atkspd=0.5, be=5, ranged=True, img="ashe.png")
         self.passName = "Frost Shot"
         self.passDesc = "Slows enemies hit by attacks"
         self.actName = "Volley"

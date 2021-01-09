@@ -45,7 +45,7 @@ class Singed(Champion):
         if not self.running:
             screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         else:
-            screen.blit(pygame.transform.flip(self.img, self.dir == 1 and self.path > 0,  False), (self.x, self.y))
+            screen.blit(pygame.transform.flip(self.img, self.dir == 1 and self.path != 1 or self.path == 7,  False), (self.x, self.y))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange, 5)
         if not self.summ:

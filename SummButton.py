@@ -7,7 +7,9 @@ class SummButton:
     def __init__(self, x, y, screen, Champ, label=None, img=None):
         self.screen = screen
         self.label = label
-        # self.img = pygame.image.load(img)
+        self.img = None
+        if img is not None:
+            self.img = pygame.image.load(img)
         self.Champ = Champ
         self.champy = Champ(0, 0, summ=True)
         self.coll = pygame.Rect(x, y, 150, 100)
@@ -21,6 +23,8 @@ class SummButton:
             pygame.draw.rect(self.screen, (100, 100, 100), self.coll)
         else:
             pygame.draw.rect(self.screen, (0, 200, 0), self.coll)
+        if self.img is not None:
+            self.screen.blit(self.img, (self.coll.x, self.coll.y))
         if self.coll.collidepoint(mousePos[0], mousePos[1]):
             maxbar = pygame.Surface((self.coll.width, self.coll.height))
             maxbar.set_alpha(20)

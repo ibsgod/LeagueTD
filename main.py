@@ -6,11 +6,13 @@ import json
 from Ashe import Ashe
 from Button import Button
 from Champion import Champion
+from Draven import Draven
 from Info import Info
 from Lulu import Lulu
 from MasterYi import MasterYi
 from Minion import Minion
 from Nasus import Nasus
+from Nexus import Nexus
 from Sidebar import Sidebar
 from Singed import Singed
 from Sona import Sona
@@ -25,7 +27,6 @@ screen = pygame.display.set_mode((width, height))
 screen.fill((0, 0, 50))
 Info.screen = screen
 click = False
-mouse = False
 mousePos = None
 sidebar = Sidebar()
 manaTimer = 0
@@ -40,7 +41,8 @@ currIter = 0
 nextTime = 0
 startLine = 0
 roundInfo = 0
-
+nexHp = 1
+nexus = None
 
 try:
     with open("state.txt") as file:
@@ -67,6 +69,7 @@ def menu():
     global data
     global menuTime
     global startmenuTime
+    global nexHp
     while True:
         if len(Info.buttDict) == 0:
             Info.buttDict["newGame"] = Button((1300 - 400) / 2, 375, 400, 100, screen,
@@ -82,15 +85,13 @@ def menu():
         mousePos = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                save()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         Info.champions.clear()
 
         for i in Info.buttDict:
-            val = Info.buttDict[i].tick(mousePos, click)
-            if val:
+            if Info.buttDict[i].tick(mousePos, click):
                 if i == "newGame":
                     Info.rounds = 1
                     Info.be = 1000
@@ -113,6 +114,7 @@ def menu():
                         Info.rounds = data["rounds"]
                         startLine = data["startLine"]
                         roundLine = data["startLine"]
+                        nexHp = data["nexHp"]
                         for i in data["champions"]:
                             c = eval(i["name"])(i["x"], i["y"], hp=i["hp"], mana=i["mana"])
                             if i["name"] == "Nasus":
@@ -129,7 +131,6 @@ def menu():
         pygame.time.Clock().tick(60)
 
 def play():
-    global mouse
     global mousePos
     global click
     global manaTimer
@@ -140,17 +141,19 @@ def play():
     global roundLine
     global startLine
     global currentTime
+    global nexus
     sidebar = Sidebar()
     manaTimer = 0
     currentTime = 0
     startTime = 0
     hovering = None
     playing = False
+    nexus = Nexus(Info.enemypath[len(Info.enemypath)-1][0] - 35, Info.enemypath[len(Info.enemypath)-1][1] - 35, nexHp)
     Info.enemies.clear()
     Info.particles.clear()
     Info.poison.clear()
     Info.buttDict.clear()
-    Info.buttDict["Ashe"] = SummButton(0, 550, screen, Ashe)
+    Info.buttDict["Ashe"] = SummButton(0, 550, screen, Ashe, img="asheicon.png")
     Info.buttDict["MasterYi"] = SummButton(150, 550, screen, MasterYi)
     Info.buttDict["Sona"] = SummButton(300, 550, screen, Sona)
     Info.buttDict["Lulu"] = SummButton(450, 550, screen, Lulu)
@@ -180,6 +183,8 @@ def play():
         if playing and (len(Info.enemies) == 0 or Info.acTime > nextTime) and roundInfo[roundLine][0] != '-':
             if roundInfo[roundLine][0] == "m":
                 Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, float(roundInfo[roundLine][1]))
+            if roundInfo[roundLine][0] == "d":
+                Draven(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, float(roundInfo[roundLine][1]))
             currIter += 1
             if currIter == int(roundInfo[roundLine][3]):
                 currIter = 0
@@ -208,11 +213,15 @@ def play():
                 Info.atkTimers[i] = Info.acTime
             for j in i.projects:
                 j.tick()
+        if nexus.tick(mousePos, click) == 2:
+            deselect = False
         for i in Info.enemies:
             if Info.acTime - Info.atkTimers[i] > i.atkspd * 1000:
                 Info.atkTimers[i] = Info.acTime
                 if (i.slow[0] > 0 or i.slow[1] < Info.acTime) and i.target is not None:
                     i.fire()
+            for j in i.projects:
+                j.tick()
             if i.tick(mousePos, click) == 2:
                 deselect = False
         if deselect:
@@ -235,6 +244,10 @@ def play():
             i.draw(screen)
             for j in i.projects:
                 j.draw(screen)
+        for i in Info.enemies:
+            for j in i.projects:
+                j.draw(screen)
+        nexus.draw(screen)
         for i in Info.particles[:]:
             pygame.draw.circle(screen, i[5], (int(i[0]), int(i[1])), i[4])
             i[0] += i[2]
@@ -318,7 +331,9 @@ def play():
         if "start" not in Info.buttDict.keys() or Info.buttDict["start"] is None and not playing:
             Info.buttDict["start"] = Button(1160, 80 + beLbl.get_height() + timeLbl.get_height(), 130, 50, screen,
                                             label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Start Round", 1, (255, 255, 255)), color=(0, 200, 0))
-
+        if nexus.hp <= 0:
+            end(Info.rounds)
+            return
         pygame.display.update()
         pygame.time.Clock().tick(60)
 
@@ -333,8 +348,62 @@ def save():
     datadic["acTime"] = Info.acTime
     datadic["rounds"] = Info.rounds
     datadic["startLine"] = startLine
+    datadic["nexHp"] = nexHp
     with open("state.txt", "w") as outfile:
         outfile.seek(0)
         json.dump(datadic, outfile)
+
+def end(round):
+    global click
+    global mousePos
+    global data
+    with open("state.txt", "w") as outfile:
+        outfile.truncate(0)
+    data = ""
+    rotTime = 0
+    rotflip = 1
+    while True:
+        screen.fill((150, 0, 150))
+        Info.buttDict.clear()
+        Info.buttDict["menu"] = Button((1300 - 400) / 2, 375, 400, 100, screen,
+                                          label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
+                                              "Menu", 1, (255, 255, 255)))
+        Info.buttDict["quit"] = Button((1300 - 400) / 2, 500, 400, 100, screen,
+                                          label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
+                                          "Quit", 1, (255, 255, 255)))
+        mousePos = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                click = True
+        if pygame.time.get_ticks() - rotTime > 500:
+            rotflip *= -1
+            rotTime = pygame.time.get_ticks()
+        if round < 20:
+            roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render("Oof! You lost on round " + str(round), 1, (255, 255, 255))
+            screen.blit(roundLbl, (int((1300 - roundLbl.get_width())/2), int((650 - roundLbl.get_height())/3)))
+            screen.blit(pygame.transform.rotate(pygame.image.load("pepehands.gif"), 20 * rotflip), (100, 100))
+            screen.blit(pygame.transform.rotate(pygame.image.load("pepejuice.gif"), -30 * rotflip), (1000, 400))
+            screen.blit(pygame.transform.rotate(pygame.image.load("pepesad.gif"), -30 * rotflip), (700, 30))
+            screen.blit(pygame.transform.rotate(pygame.transform.scale(pygame.image.load("sadcat.png"), (184, 173)), 10 * rotflip), (70, 400))
+        else:
+            roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
+                "POG! You did it!", 1, (255, 255, 255))
+            screen.blit(roundLbl, (int((1300 - roundLbl.get_width()) / 2), int((650 - roundLbl.get_height()) / 3)))
+            screen.blit(pygame.transform.rotate(pygame.image.load("pogchamp.png"), 20 * rotflip), (100, 100))
+            screen.blit(pygame.transform.rotate(pygame.image.load("poggies.png"), -30 * rotflip), (1000, 400))
+            screen.blit(pygame.transform.rotate(pygame.transform.scale(pygame.image.load("jojo.png"), (350, 200)), -30 * rotflip), (900, 30))
+            screen.blit(pygame.transform.rotate(pygame.transform.scale(pygame.image.load("thumsbup.png"), (184, 173)),
+                                                10 * rotflip), (70, 400))
+        for i in Info.buttDict:
+            if Info.buttDict[i].tick(mousePos, click):
+                if i == "menu":
+                    Info.buttDict.clear()
+                    return
+                if i == "quit":
+                    sys.exit()
+        pygame.display.update()
+        pygame.time.Clock().tick(60)
 
 menu()
