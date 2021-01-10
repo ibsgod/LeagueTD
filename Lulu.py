@@ -24,6 +24,35 @@ class Lulu(Champion):
             self.hp = hp
             self.mana = mana
         self.boosted = []
+        self.ultCircle = None
+        self.ulting = None
+
+    def draw(self, screen):
+        screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
+        if Info.selected is self:
+            pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+40, 5)
+        if not self.summ:
+            maxbar = pygame.Surface((self.size, 8))
+            maxbar.set_alpha(80)
+            maxbar.fill((0, 0, 0))
+            screen.blit(maxbar, (self.x + (self.size - maxbar.get_width()) / 2, self.y - 15))
+            pygame.draw.rect(screen, (min(255, int((self.maxhp - self.hp) * 255 / (self.maxhp - 1))),
+                                      max(0, int(255 - (self.maxhp - self.hp) * 255 / (self.maxhp - 1))), 0), (
+                                 self.x + (self.size - maxbar.get_width()) / 2, self.y - 15,
+                                 max(0, maxbar.get_width() / self.maxhp * self.hp), 8))
+            screen.blit(maxbar, (self.x + (self.size - maxbar.get_width()) / 2, self.y - 15 + maxbar.get_height()))
+            pygame.draw.rect(screen, (0, 100, 200), (
+                                 self.x + (self.size - maxbar.get_width()) / 2, self.y - 15 + maxbar.get_height(),
+                                 max(0, maxbar.get_width() / self.maxmana * self.mana), 8))
+        if self.ultCircle is not None:
+            surface1 = pygame.Surface((420, 420))
+            surface1.set_colorkey((0, 0, 0))
+            surface1.set_alpha(int((self.ultCircle[1] - Info.acTime) / 1000 * 255))
+            pygame.draw.circle(surface1, (150, 0, 150), (200, 200), 210)
+            screen.blit(surface1, (self.ultCircle[0][0]-210, self.ultCircle[0][1]-210))
+            if self.ultCircle[1] < Info.acTime:
+                self.ultCircle = None
+                self.ulting = None
 
     def tick(self, mousePos, click):
         if not self.summ:
@@ -64,9 +93,12 @@ class Lulu(Champion):
                 champ = (i.hp, i)
         if champ[1] is not None:
             champ[1].hp = champ[1].maxhp
+            self.ulting = champ[1]
+            self.ultCircle = ((champ[1].cx, champ[1].cy), Info.acTime + 1000)
             for i in Info.enemies:
                 if self.checkRange((champ[1].cx, champ[1].cy), 200, i.hitbox):
                     i.takeDamage(1)
                     i.cripple((0, Info.acTime + 1000))
+
 
 

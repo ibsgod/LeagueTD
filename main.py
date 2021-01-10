@@ -18,8 +18,8 @@ from Singed import Singed
 from Sona import Sona
 from SummButton import SummButton
 
-pygame.mixer.init()
 pygame.init()
+pygame.mixer.init()
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 width = 1300
 height = 650
@@ -43,6 +43,8 @@ startLine = 0
 roundInfo = 0
 nexHp = 1
 nexus = None
+placeSound = pygame.mixer.Sound("place.wav")
+
 
 try:
     with open("state.txt") as file:
@@ -81,6 +83,7 @@ def menu():
             if len(data) == 0:
                 Info.buttDict["loadGame"].color = (100, 100, 100)
         screen.fill((200, 30, 150))
+
         click = False
         mousePos = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -184,7 +187,7 @@ def play():
             if roundInfo[roundLine][0] == "m":
                 Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, float(roundInfo[roundLine][1]))
             if roundInfo[roundLine][0] == "d":
-                Draven(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, float(roundInfo[roundLine][1]))
+                Draven(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, float(roundInfo[roundLine][1]))
             currIter += 1
             if currIter == int(roundInfo[roundLine][3]):
                 currIter = 0
@@ -211,6 +214,8 @@ def play():
             if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000:
                 i.fire()
                 Info.atkTimers[i] = Info.acTime
+                if i.fireSound is not None:
+                    i.fireSound.play()
             for j in i.projects:
                 j.tick()
         if nexus.tick(mousePos, click) == 2:
@@ -296,6 +301,8 @@ def play():
                         Info.selected.actCd = (Info.acTime, Info.selected.actCd[1])
                         Info.selected.mana -= Info.selected.actCost
                         Info.selected.useAbility()
+                        if Info.selected.abiSound is not None:
+                            Info.selected.abiSound.play()
                     if i == "sell":
                         Info.be += Info.selected.be
                         Info.champions.remove(Info.selected)
@@ -319,9 +326,9 @@ def play():
                     Info.summoning.draw(screen)
                     if click:
                         if mousePos[0] < 1050 and mousePos[1] < 550:
-                            Info.selected = Info.summoning.Champ(Info.summoning.x,
-                                                                 Info.summoning.y)
+                            Info.selected = Info.summoning.Champ(Info.summoning.x,Info.summoning.y)
                             Info.be -= Info.summoning.be
+                            placeSound.play()
                         else:
                             Info.selected = None
                         Info.summoning = None

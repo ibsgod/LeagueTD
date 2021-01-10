@@ -7,7 +7,7 @@ from Projectile import Projectile
 
 class Draven(Enemy):
     def __init__(self, x, y, hp):
-        super().__init__(x, y, name="Draven", hp=hp, atk=2, atkspd=1, speed=10, atkrange=200, img="sudo.png")
+        super().__init__(x, y, name="Draven", hp=hp, atk=2, atkspd=1, speed=10, atkrange=200, img="sudo.png", colour=(100, 0, 0))
         Info.enemies.append(self)
         self.flip = True
 

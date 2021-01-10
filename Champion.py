@@ -33,12 +33,21 @@ class Champion:
         self.block = block
         self.blocked = []
         Info.atkTimers[self] = Info.acTime
+        try:
+            self.fireSound = pygame.mixer.Sound(self.name.lower().replace(" ", "") + "atk.wav")
+        except:
+            self.fireSound = None
+        try:
+            self.abiSound = pygame.mixer.Sound(self.name.lower().replace(" ", "") + "abi.wav")
+        except:
+            self.abiSound = None
+
 
 
     def draw(self, screen):
         screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         if Info.selected is self:
-            pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+10, 5)
+            pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+40, 5)
         if not self.summ:
             maxbar = pygame.Surface((self.size, 8))
             maxbar.set_alpha(80)

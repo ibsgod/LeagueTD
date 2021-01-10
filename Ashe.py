@@ -24,6 +24,8 @@ class Ashe(Champion):
             self.hp = hp
             self.mana = mana
 
+
+
     def tick(self, mousePos, click):
         self.canUse = len(Info.enemies) > 0
         if not self.summ:

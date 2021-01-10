@@ -132,6 +132,7 @@ class MasterYi(Champion):
             return
         self.hp -= dmg
         if self.hp <= 0:
+            self.abiSound.stop()
             Info.dieEffect(self.cx, self.y + self.size, 2, (0, 255, 255))
             Info.champions.remove(self)
             if Info.selected is self:

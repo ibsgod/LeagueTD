@@ -6,5 +6,5 @@ from Info import Info
 
 class Minion(Enemy):
     def __init__(self, x, y, hp):
-        super().__init__(x, y, name="Minion", hp=hp, atk=1, atkspd = 2, speed=10, img="minion.png")
+        super().__init__(x, y, name="Minion", hp=hp, atk=1, atkspd = 2, speed=10, img="minion.png", colour=(200, 0, 0))
         Info.enemies.append(self)

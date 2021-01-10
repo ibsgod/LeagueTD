@@ -6,7 +6,7 @@ from Info import Info
 
 
 class Enemy:
-    def __init__(self, x, y, name, hp, atk, atkspd, speed, img, atkrange=80):
+    def __init__(self, x, y, name, hp, atk, atkspd, speed, img, atkrange=80, colour=(200, 0, 0)):
         self.x = x
         self.y = y
         self.name = name
@@ -28,7 +28,7 @@ class Enemy:
         self.target = None
         self.projects = []
         self.atkrange = atkrange
-        self.colour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        self.colour = colour
         Info.atkTimers[self] = Info.acTime
 
     def draw(self, screen):

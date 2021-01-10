@@ -19,12 +19,18 @@ class SummButton:
         for i in Info.champions:
             if isinstance(i, self.Champ):
                 has = True
-        if has or Info.be < self.champy.be:
-            pygame.draw.rect(self.screen, (100, 100, 100), self.coll)
+        if self.img is None:
+            if has or Info.be < self.champy.be:
+                pygame.draw.rect(self.screen, (100, 100, 100), self.coll)
+            else:
+                pygame.draw.rect(self.screen, (0, 200, 0), self.coll)
         else:
-            pygame.draw.rect(self.screen, (0, 200, 0), self.coll)
-        if self.img is not None:
             self.screen.blit(self.img, (self.coll.x, self.coll.y))
+            if  has or Info.be < self.champy.be:
+                maxbar = pygame.Surface((self.coll.width, self.coll.height))
+                maxbar.set_alpha(150)
+                maxbar.fill((0, 0, 0))
+                self.screen.blit(maxbar, (self.coll.x, self.coll.y))
         if self.coll.collidepoint(mousePos[0], mousePos[1]):
             maxbar = pygame.Surface((self.coll.width, self.coll.height))
             maxbar.set_alpha(20)
