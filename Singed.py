@@ -102,7 +102,7 @@ class Singed(Champion):
                         if i.cx < self.cx:
                             self.rot -= 180
                         self.target = i
-                    if len(self.blocked) < self.block:
+                    if len(self.blocked) < self.block and not self.running:
                         self.blocked.append(i)
             if Info.playing:
                 Info.poison.append(Poison(self.cx, self.cy + 10,
@@ -134,8 +134,7 @@ class Singed(Champion):
 
 
     def fire(self):
-        if not self.running:
-            self.target.takeDamage(self.atk)
+        self.target.takeDamage(self.atk)
 
 
     def useAbility(self):

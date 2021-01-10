@@ -34,7 +34,7 @@ class Enemy:
     def draw(self, screen):
         screen.blit(pygame.transform.flip(self.img, self.flip, False), (int(self.x), int(self.y)))
         if Info.selected is self:
-            pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+10, 5)
+            pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+50, 5)
         maxbar = pygame.Surface((self.size, 5))
         maxbar.set_alpha(80)
         maxbar.fill((0, 0, 0))

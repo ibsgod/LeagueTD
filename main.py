@@ -211,7 +211,7 @@ def play():
         for i in Info.champions:
             if i.tick(mousePos, click) == 2:
                 deselect = False
-            if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000:
+            if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000 and not (i.name == "Singed" and i.running):
                 i.fire()
                 Info.atkTimers[i] = Info.acTime
                 if i.fireSound is not None:
@@ -301,7 +301,7 @@ def play():
                         Info.selected.actCd = (Info.acTime, Info.selected.actCd[1])
                         Info.selected.mana -= Info.selected.actCost
                         Info.selected.useAbility()
-                        if Info.selected.abiSound is not None:
+                        if Info.selected.abiSound is not None and Info.selected.name != "Nasus":
                             Info.selected.abiSound.play()
                     if i == "sell":
                         Info.be += Info.selected.be

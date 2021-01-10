@@ -44,7 +44,7 @@ class Sona(Champion):
                     Info.selected = self
                     return 2
                 return 1
-            if Info.acTime - self.regenTimer > 1500:
+            if Info.acTime - self.regenTimer > 1000:
                 for i in Info.champions:
                     if self.checkRange((self.cx, self.cy), self.atkrange, i.hitbox):
                         i.hp = min(i.hp+1, i.maxhp)

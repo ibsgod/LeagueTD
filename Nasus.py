@@ -83,9 +83,11 @@ class Nasus(Champion):
         self.hp = min(self.hp + 0.25 * (self.atk + (self.Qbonus if self.Q else 0)), self.maxhp)
         if self.super:
             self.hp = min(self.hp + 0.25 * (self.atk + (self.Qbonus if self.Q else 0)), self.maxhp)
-        if self.Q and self.target is None:
-            self.Qbonus += 1
-            Info.dieEffect(self.cx, self.y+self.size, 2, (0, 255, 0))
+        if self.Q:
+            self.abiSound.play()
+            if self.target is None:
+                self.Qbonus += 1
+                Info.dieEffect(self.cx, self.y+self.size, 2, (0, 255, 0))
         self.Q = False
 
 
