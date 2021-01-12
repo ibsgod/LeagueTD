@@ -7,12 +7,12 @@ from Projectile import Projectile
 
 class Draven(Enemy):
     def __init__(self, x, y, hp):
-        super().__init__(x, y, name="Draven", hp=hp, atk=2, atkspd=1, speed=10, atkrange=200, img="sudo.png", colour=(100, 0, 0))
+        super().__init__(x, y, name="Draven", hp=hp, atk=2, atkspd=1, speed=10, atkrange=200, colour=(100, 0, 0))
         Info.enemies.append(self)
-        self.flip = True
 
     def tick(self, mousePos, click):
         self.target = None
+        self.rot = 180
         for i in Info.champions:
             if self.checkRange((self.cx, self.cy), self.atkrange, i.hitbox):
                 if self.target is None:

@@ -12,15 +12,16 @@ class Sidebar:
             return
         nameLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 40).render(selected.name, 1, (255, 255, 255))
         screen.blit(nameLbl, (1175 - nameLbl.get_width()/2, 210))
-        maxbar = pygame.Surface((200, 20))
-        maxbar.set_alpha(80)
-        maxbar.fill((0, 0, 0))
-        screen.blit(maxbar, (1075, 250))
-        pygame.draw.rect(screen, (min(255, int((selected.maxhp - selected.hp) * 255 / (selected.maxhp))),
-                                  max(0, int(255 - (selected.maxhp - selected.hp) * 255 / (selected.maxhp))), 0), (
-                             1075, 250, max(0, maxbar.get_width() / selected.maxhp * selected.hp), 20))
-        hpLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 20).render('{0:.3g}'.format(selected.hp) + " / " + str(selected.maxhp), 1, (255, 255, 255))
-        screen.blit(hpLbl, ((1175 - hpLbl.get_width()/2, 253)))
+        if hasattr(selected, "hp"):
+            maxbar = pygame.Surface((200, 20))
+            maxbar.set_alpha(80)
+            maxbar.fill((0, 0, 0))
+            screen.blit(maxbar, (1075, 250))
+            pygame.draw.rect(screen, (min(255, int((selected.maxhp - selected.hp) * 255 / (selected.maxhp))),
+                                      max(0, int(255 - (selected.maxhp - selected.hp) * 255 / (selected.maxhp))), 0), (
+                                 1075, 250, max(0, maxbar.get_width() / selected.maxhp * selected.hp), 20))
+            hpLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 20).render('{0:.3g}'.format(selected.hp) + " / " + str(selected.maxhp), 1, (255, 255, 255))
+            screen.blit(hpLbl, ((1175 - hpLbl.get_width()/2, 253)))
         if hasattr(selected, "mana"):
             screen.blit(maxbar, (1075, 270))
             pygame.draw.rect(screen, (0, 100, 200), (1075, 270, max(0, maxbar.get_width() / selected.maxmana * selected.mana), 20))

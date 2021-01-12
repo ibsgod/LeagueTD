@@ -9,7 +9,7 @@ from Projectile import Projectile
 
 class Ashe(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Ashe", hp=6, mana=10, atk=1, atkrange=200, atkspd=0.5, be=5, ranged=True, img="ashe.png")
+        super().__init__(x, y, summ, name="Ashe", hp=6, mana=10, atk=1, atkrange=200, atkspd=0.5, be=5, ranged=True)
         self.passName = "Frost Shot"
         self.passDesc = "Slows enemies hit by attacks"
         self.actName = "Volley"
@@ -23,6 +23,7 @@ class Ashe(Champion):
         if hp is not None:
             self.hp = hp
             self.mana = mana
+
 
 
 
@@ -58,6 +59,7 @@ class Ashe(Champion):
 
     def fire(self):
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, name="Ashe"))
+        self.animStart = Info.acTime
 
     def useAbility(self):
         angles = []

@@ -1,1 +1,1 @@
-{"champions": [{"name": "Ashe", "x": 179.0, "y": 194.0, "hp": 6, "mana": 6}], "be": 980, "acTime": 29969, "rounds": 4, "startLine": 7, "nexHp": 1}
+{"champions": [{"name": "Ashe", "x": 518.0, "y": 271.0, "hp": 6, "mana": 4}], "be": 995, "acTime": 17387, "rounds": 3, "startLine": 5, "nexHp": 1}

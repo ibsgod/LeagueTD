@@ -39,7 +39,7 @@ class Projectile:
         if self.x < 0 or self.y < 0 or self.x - 15 > 1050 or self.y - 15 > 550:
             self.tower.projects.remove(self)
             return
-        if self.tower in Info.champions:
+        if self.tower in Info.champions or self.name == "Box":
             for i in Info.enemies:
                 if i.hitbox.colliderect(self.hitbox) and i not in self.hit:
                     if self.name == "Ashe":

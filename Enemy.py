@@ -6,7 +6,7 @@ from Info import Info
 
 
 class Enemy:
-    def __init__(self, x, y, name, hp, atk, atkspd, speed, img, atkrange=80, colour=(200, 0, 0)):
+    def __init__(self, x, y, name, hp, atk, atkspd, speed, atkrange=80, colour=(200, 0, 0)):
         self.x = x
         self.y = y
         self.name = name
@@ -15,7 +15,11 @@ class Enemy:
         self.atk = atk
         self.atkspd = atkspd
         self.speed = speed
-        self.img = pygame.image.load(img)
+        self.img = pygame.image.load("sudo.png")
+        try:
+            self.img = pygame.image.load(name.lower().replace(" ", "") + ".png")
+        except:
+            pass
         self.path = 1
         self.width = self.img.get_width()
         self.height = self.img.get_width()
@@ -23,16 +27,16 @@ class Enemy:
         self.cx = self.x + self.width/2
         self.cy = self.y + self.height/2
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.flip = False
         self.slow = (1, 0)
         self.target = None
         self.projects = []
         self.atkrange = atkrange
         self.colour = colour
+        self.rot = 0
         Info.atkTimers[self] = Info.acTime
 
     def draw(self, screen):
-        screen.blit(pygame.transform.flip(self.img, self.flip, False), (int(self.x), int(self.y)))
+        screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (int(self.x), int(self.y)))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+50, 5)
         maxbar = pygame.Surface((self.size, 5))
@@ -47,12 +51,15 @@ class Enemy:
     def tick(self, mousePos, click):
         yes = False
         self.target = None
+        self.rot = 180
         for i in Info.champions:
             if i.blocked is not None and self in i.blocked:
                 self.target = i
                 yes = True
+                if self.cx < i.cx:
+                    self.rot -= 180
                 break
-        if not yes:
+        if not yes and Info.playing:
             self.move()
         if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
             if click:

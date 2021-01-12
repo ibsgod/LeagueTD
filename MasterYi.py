@@ -9,7 +9,7 @@ from Info import Info
 
 class MasterYi(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Master Yi", hp=8, mana=10, atk=1, atkrange=80, atkspd=0.4, be=5, ranged=False, block=3, img="sudo.png")
+        super().__init__(x, y, summ, name="Master Yi", hp=8, mana=10, atk=1, atkrange=80, atkspd=0.4, be=5, ranged=False, block=3)
         self.passName = "Double Strike"
         self.passDesc = "Hits twice every 4th attack"
         self.actName = "Alpha Strike"

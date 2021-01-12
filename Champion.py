@@ -7,7 +7,7 @@ from Projectile import Projectile
 
 
 class Champion:
-    def __init__(self, x, y, summ, name, hp, mana, atk, atkrange, atkspd, be, ranged, img, block=0):
+    def __init__(self, x, y, summ, name, hp, mana, atk, atkrange, atkspd, be, ranged, block=0):
         self.x = x
         self.y = y
         self.name = name
@@ -22,7 +22,12 @@ class Champion:
         self.rot = 0
         self.be = be
         self.ranged = ranged
-        self.img = pygame.image.load(img)
+        self.img = pygame.image.load("sudo.png")
+        try:
+            self.img = pygame.image.load(name.lower().replace(" ", "") + ".png")
+        except:
+            pass
+        self.idleimg = self.img
         self.size = self.img.get_width()
         self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
         self.cx = self.x + self.size / 2
@@ -41,10 +46,24 @@ class Champion:
             self.abiSound = pygame.mixer.Sound(self.name.lower().replace(" ", "") + "abi.wav")
         except:
             self.abiSound = None
+        self.atkAnim = []
+        i = 1
+        while True:
+            try:
+                self.atkAnim.append(pygame.image.load(self.name.lower().replace(" ", "") + str(i) + ".png"))
+                i += 1
+            except:
+                break
+        self.animStart = None
 
 
 
     def draw(self, screen):
+
+        if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:
+            self.img = self.atkAnim[int((self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim))-1]
+        else:
+            self.img = self.idleimg
         screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+40, 5)

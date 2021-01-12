@@ -21,6 +21,7 @@ class Info:
     poison = []
     rounds = 1
     playing = False
+    highscore = 0
     def dieEffect(x, y, size, colour):
         for i in range(50):
             Info.particles.append([random.randint(x - 10 * size, x + 10 * size),
@@ -31,7 +32,7 @@ class Info:
                                     min(255, max(0, colour[0] + random.randint(-10, 10))),
                                     min(255, max(0, colour[1] + random.randint(-10, 10))),
                                     min(255, max(0, colour[2] + random.randint(-10, 10)))),
-                                    Info.acTime + random.randint(500, 1000)])
+                                    Info.acTime + random.randint(-300 + 300*size, 300 + 300*size)])
 
 
 
