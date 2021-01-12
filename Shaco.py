@@ -5,6 +5,7 @@ import pygame
 
 from Box import Box
 from Champion import Champion
+from Clone import Clone
 from Info import Info
 
 class Shaco(Champion):
@@ -25,7 +26,6 @@ class Shaco(Champion):
             self.mana = mana
         self.boxTimer = Info.acTime + 2000
         self.boxes = []
-        self.clones = []
 
     def draw(self, screen):
         screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
@@ -76,7 +76,17 @@ class Shaco(Champion):
         if Info.acTime > self.boxTimer:
             if len(self.boxes) > 4:
                 self.boxes.remove(self.boxes[0])
-            self.boxes.append(Box(self.cx - 20, self.cy - 20, min(max(0, random.randint(self.cx - 120, self.cx + 120)), 1010), min(max(0, random.randint(self.cy - 120, self.cy + 120)), 510), self))
+            while True:
+                rx = min(max(0, random.randint(self.cx - 120, self.cx + 80)), 1010)
+                ry = min(max(0, random.randint(self.cy - 120, self.cy + 80)), 510)
+                yes = False
+                for i in Info.pathareas:
+                    if i.collidepoint(rx + 20, ry + 20):
+                        yes = True
+                        break
+                if not yes:
+                    self.boxes.append(Box(self.cx - 20, self.cy - 20, rx, ry, self))
+                    break
             self.boxTimer = Info.acTime + 2000
 
 
@@ -86,5 +96,15 @@ class Shaco(Champion):
 
 
     def useAbility(self):
-        self.Q = True
+        while True:
+            rx = min(max(0, random.randint(self.cx - 52, self.cx + 48)), 1098)
+            ry = min(max(0, random.randint(self.cy - 152, self.cy + 48)), 498)
+            yes = False
+            for i in Info.pathareas:
+                if i.collidepoint(rx+52, ry+52):
+                    Clone(self.cx - 52, self.cy - 52, rx, ry, dur=Info.acTime + 10000)
+                    yes = True
+                    break
+            if yes:
+                break
 

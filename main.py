@@ -235,13 +235,13 @@ def play():
             manaTimer = Info.acTime
         if Info.acTime - manaTimer > 3000:
             for i in Info.champions:
-                if i.mana < i.maxmana:
+                if i.name != "Clone" and i.mana < i.maxmana:
                     i.mana += 1
             manaTimer = Info.acTime
         for i in Info.champions:
             if i.tick(mousePos, click) == 2:
                 deselect = False
-            if i.name == "Shaco":
+            if i.name == "Shaco" or i.name == "Clone":
                 for j in i.boxes:
                     if j.tick(mousePos, click) == 2:
                         deselect = False
@@ -251,7 +251,7 @@ def play():
                     if Info.playing:
                         for k in j.projects:
                             k.tick()
-            if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000 and not (i.name == "Singed" and i.running):
+            if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000 and not (i.name == "Singed" and i.runningf):
                 i.fire()
                 Info.atkTimers[i] = Info.acTime
                 if i.fireSound is not None:
@@ -274,7 +274,7 @@ def play():
             Info.selected = None
         if Info.summoning is not None:
             Info.selected = Info.summoning
-        if Info.selected is None or not isinstance(Info.selected, Champion) or Info.summoning is not None:
+        if Info.selected is None or not isinstance(Info.selected, Champion) or Info.selected.name == "Clone" or Info.summoning is not None:
             Info.buttDict["sell"] = None
             Info.buttDict["use"] = None
         elif Info.buttDict["sell"] is None:
@@ -290,7 +290,7 @@ def play():
             i.draw(screen)
             for j in i.projects:
                 j.draw(screen)
-            if i.name == "Shaco":
+            if i.name == "Shaco" or i.name == "Clone":
                 for j in i.boxes:
                     j.draw(screen)
                     for k in j.projects:
