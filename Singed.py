@@ -15,7 +15,7 @@ class Singed(Champion):
         self.passDesc = "Farts so bad it hurts enemies"
         self.actName = "Sanik"
         self.actDesc = "Runs this shit like cardio"
-        self.actCd = (0, 0.5)
+        self.actCd = (Info.acTime, 0.5)
         self.actCost = 0.05
         self.Champ = Singed
         if not summ:

@@ -14,7 +14,7 @@ class MasterYi(Champion):
         self.passDesc = "Hits twice every 4th attack"
         self.actName = "Alpha Strike"
         self.actDesc = "Becomes invincible and strikes nearby enemies"
-        self.actCd = (0, 5)
+        self.actCd = (Info.acTime, 5)
         self.actCost = 4
         self.Champ = MasterYi
         if not summ:

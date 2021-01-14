@@ -15,7 +15,7 @@ class Shaco(Champion):
         self.passDesc = "Periodically spawns boxes that attack enemies"
         self.actName = "Hallucinate"
         self.actDesc = "Creates a clone for a few seconds"
-        self.actCd = (0, 5)
+        self.actCd = (Info.acTime, 5)
         self.actCost = 6
         self.Champ = Shaco
         if not summ:

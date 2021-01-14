@@ -14,7 +14,7 @@ class Ashe(Champion):
         self.passDesc = "Slows enemies hit by attacks"
         self.actName = "Volley"
         self.actDesc = "Fires a splay of arrows"
-        self.actCd = (0, 5)
+        self.actCd = (Info.acTime, 5)
         self.actCost = 4
         self.Champ = Ashe
         if not summ:
@@ -75,17 +75,20 @@ class Ashe(Champion):
         start = 0
         end = 0
         tot = 0
-        maxx = (0, 0)
+        _max = [(0, 0)]
         while start < len(angles)/2 and end < len(angles):
             if min(angles[end] - angles[start], 360 - angles[start] + angles[end]) <= 80:
                 tot += 1
                 end += 1
-                if tot > maxx[0]:
-                    maxx = (tot, angles[start])
+                if tot > _max[0][0]:
+                    _max.clear()
+                    _max.append((tot, angles[start]))
+                elif tot == _max[0][0]:
+                    _max.append((tot, angles[start]))
             else:
                 tot -= 1
                 start += 1
-        self.rot = angles[start]
+        self.rot = _max[int(len(_max)/2)][1]
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-40, self, pen=True, atk=2, speed=40, name="Ashe"))
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-30, self, pen=True, atk=2, speed=40, name="Ashe"))
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-20, self, pen=True, atk=2, speed=40, name="Ashe"))

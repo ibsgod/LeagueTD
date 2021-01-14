@@ -14,7 +14,7 @@ class Nasus(Champion):
         self.actName = "Siphoning Strike"
         self.Qbonus = 1
         self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Damage permanently increased if it kills enemy. Super Form at 10 stacks."
-        self.actCd = (0, 3)
+        self.actCd = (Info.acTime, 3)
         self.actCost = 2
         self.Champ = Nasus
         if not summ:

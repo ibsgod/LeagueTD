@@ -14,7 +14,7 @@ class Lulu(Champion):
         self.passDesc = "Nearby towers get increased attack speed"
         self.actName = "Hugeify!"
         self.actDesc = "Most wounded champion in range gets fully healed and stuns nearby enemies"
-        self.actCd = (0, 5)
+        self.actCd = (Info.acTime, 5)
         self.actCost = 4
         self.Champ = Lulu
         if not summ:

@@ -82,6 +82,8 @@ def menu():
     global nexHp
     global endless
     while True:
+        if pygame.mixer.music.get_busy():
+            pygame.mixer.music.stop()
         if len(Info.buttDict) == 0:
             Info.buttDict["newGame"] = Button(325, 375, 300, 100, screen,
                                               label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
@@ -186,6 +188,12 @@ def play():
     Info.buttDict["Shaco"] = SummButton(900, 550, screen, Shaco)
     Info.selected = None
     Info.summoning = None
+    if endless:
+        pygame.mixer.music.load("mario.wav")
+    else:
+        pygame.mixer.music.load("kirby.wav")
+    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.play(-1)
 
     while True:
         screen.fill((200, 30, 150))
@@ -251,7 +259,7 @@ def play():
                     if Info.playing:
                         for k in j.projects:
                             k.tick()
-            if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000 and not (i.name == "Singed" and i.runningf):
+            if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000 and not (i.name == "Singed" and i.running):
                 i.fire()
                 Info.atkTimers[i] = Info.acTime
                 if i.fireSound is not None:
@@ -352,8 +360,13 @@ def play():
                         Info.selected.actCd = (Info.acTime, Info.selected.actCd[1])
                         Info.selected.mana -= Info.selected.actCost
                         Info.selected.useAbility()
-                        if Info.selected.abiSound is not None and Info.selected.name != "Nasus" and not (Info.selected.name == "Singed" and not Info.selected.running):
-                            Info.selected.abiSound.play()
+                        if Info.selected.abiSound is not None and Info.selected.name != "Nasus":
+                            if Info.selected.name == "Singed":
+                                Info.selected.abiSound.fadeout(500)
+                                if Info.selected.running:
+                                    Info.selected.abiSound.play()
+                            else:
+                                Info.selected.abiSound.play()
                     if i == "sell":
                         Info.be += Info.selected.be
                         Info.champions.remove(Info.selected)
@@ -435,11 +448,21 @@ def end(round):
     global click
     global mousePos
     global data
+    pygame.mixer.music.stop()
+    pygame.mixer.music.unload()
     with open("state.txt", "w") as outfile:
         outfile.truncate(0)
     data = ""
     rotTime = 0
     rotflip = 1
+    for i in Info.champions:
+        if i.name == "Singed":
+            i.abiSound.stop()
+    if not endless and round < 20 or endless and Info.acTime <= Info.highscore:
+            pygame.mixer.music.load("xeno.wav")
+    else:
+        pygame.mixer.music.load("pokemon.wav")
+    pygame.mixer.music.play(-1)
     while True:
         screen.fill((150, 0, 150))
         Info.buttDict.clear()
@@ -479,7 +502,7 @@ def end(round):
             save()
             if Info.acTime > Info.highscore:
                 roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                    "New highscore! You lasted " + format(Info.acTime/1000, ".1f") + "seconds!", 1, (255, 255, 255))
+                    "New highscore! You lasted " + format(Info.acTime/1000, ".1f") + " seconds!", 1, (255, 255, 255))
                 screen.blit(roundLbl, (int((1300 - roundLbl.get_width()) / 2), int((650 - roundLbl.get_height()) / 3)))
                 screen.blit(pygame.transform.rotate(pygame.image.load("pogchamp.png"), 20 * rotflip), (5, 100))
                 screen.blit(pygame.transform.rotate(pygame.image.load("poggies.png"), -30 * rotflip), (1000, 50))
@@ -490,7 +513,7 @@ def end(round):
                                             10 * rotflip), (50, 400))
             else:
                 roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                    "Oof! You lasted " + format(Info.acTime/1000, ".1f") + "seconds!", 1, (255, 255, 255))
+                    "Oof! You lasted " + format(Info.acTime/1000, ".1f") + " seconds!", 1, (255, 255, 255))
                 screen.blit(roundLbl, (int((1300 - roundLbl.get_width()) / 2), int((650 - roundLbl.get_height()) / 3)))
                 screen.blit(pygame.transform.rotate(pygame.image.load("pepehands.gif"), 20 * rotflip), (100, 100))
                 screen.blit(pygame.transform.rotate(pygame.image.load("pepejuice.gif"), -30 * rotflip), (1000, 400))
