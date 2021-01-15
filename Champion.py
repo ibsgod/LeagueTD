@@ -59,7 +59,6 @@ class Champion:
 
 
     def draw(self, screen):
-
         if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:
             self.img = self.atkAnim[int((self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim))-1]
         else:

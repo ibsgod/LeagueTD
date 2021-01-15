@@ -88,12 +88,15 @@ def menu():
             Info.buttDict["newGame"] = Button(325, 375, 300, 100, screen,
                                               label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
                                                   "New Game", 1, (255, 255, 255)))
-            Info.buttDict["loadGame"] = Button((1300 - 300) / 2, 500, 300, 100, screen,
+            Info.buttDict["loadGame"] = Button(325, 500, 300, 100, screen,
                                                label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
                                                    "Load Game", 1, (255, 255, 255)))
             Info.buttDict["endless"] = Button(675, 375, 300, 100, screen,
                                                label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
                                                    "Endless", 1, (255, 255, 255)))
+            Info.buttDict["quitGame"] = Button(675, 500, 300, 100, screen,
+                                               label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
+                                                   "Quit", 1, (255, 255, 255)))
             if len(data) == 0:
                 Info.buttDict["loadGame"].color = (100, 100, 100)
         screen.fill((200, 30, 150))
@@ -152,6 +155,8 @@ def menu():
                     with open("highscore.txt") as file:
                         Info.highscore = int(file.readline())
                     break
+                if i == "quitGame":
+                    sys.exit()
 
         pygame.display.update()
         pygame.time.Clock().tick(60)
