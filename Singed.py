@@ -10,7 +10,7 @@ from Poison import Poison
 
 class Singed(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Singed", hp=20, mana=10, atk=1, atkrange=100, atkspd=1, be=5, ranged=False, block=4)
+        super().__init__(x, y, summ, name="Singed", hp=20, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=4)
         self.passName = "Fart"
         self.passDesc = "Farts so bad it hurts enemies"
         self.actName = "Sanik"

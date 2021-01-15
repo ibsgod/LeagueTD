@@ -8,7 +8,7 @@ from Info import Info
 
 class Nasus(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Nasus", hp=15, mana=10, atk=1, atkrange=100, atkspd=1, be=5, ranged=False, block=10)
+        super().__init__(x, y, summ, name="Nasus", hp=15, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=10)
         self.passName = "Soul Eater"
         self.passDesc = "Gains HP when attacking"
         self.actName = "Siphoning Strike"

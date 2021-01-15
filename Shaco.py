@@ -10,7 +10,7 @@ from Info import Info
 
 class Shaco(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Shaco", hp=15, mana=10, atk=1, atkrange=100, atkspd=1, be=5, ranged=False, block=10)
+        super().__init__(x, y, summ, name="Shaco", hp=15, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=10)
         self.passName = "Jack in the box"
         self.passDesc = "Periodically spawns boxes that attack enemies"
         self.actName = "Hallucinate"
