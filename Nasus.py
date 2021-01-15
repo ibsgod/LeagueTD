@@ -28,7 +28,8 @@ class Nasus(Champion):
 
     def draw(self, screen):
         if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:
-            self.img = self.atkAnim[int((self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim))-1]
+            self.img = self.atkAnim[len(self.atkAnim) - int(
+                (self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim)) - 1]
         else:
             self.img = self.idleimg
         self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Damage permanently increased if it kills enemy. Super Form at 10 stacks."
