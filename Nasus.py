@@ -93,7 +93,6 @@ class Nasus(Champion):
                 self.Qbonus += 1
                 Info.dieEffect(self.cx, self.y+self.size, 2, (0, 255, 0))
         self.Q = False
-        self.animStart = Info.acTime
 
 
     def useAbility(self):

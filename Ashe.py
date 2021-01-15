@@ -59,7 +59,6 @@ class Ashe(Champion):
 
     def fire(self):
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, name="Ashe"))
-        self.animStart = Info.acTime
 
     def useAbility(self):
         angles = []

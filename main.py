@@ -265,8 +265,12 @@ def play():
                         for k in j.projects:
                             k.tick()
             if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000 and not (i.name == "Singed" and i.running):
-                i.fire()
+                i.animStart = Info.acTime
+                i.firing = True
                 Info.atkTimers[i] = Info.acTime
+            if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 500 and i.firing and not (i.name == "Singed" and i.running):
+                i.fire()
+                i.firing = False
                 if i.fireSound is not None:
                     i.fireSound.play()
             if Info.playing:

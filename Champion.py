@@ -55,7 +55,7 @@ class Champion:
             except:
                 break
         self.animStart = None
-
+        self.firing = True
 
 
     def draw(self, screen):
