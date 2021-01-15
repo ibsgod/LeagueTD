@@ -34,5 +34,5 @@ class Draven(Enemy):
 
     def fire(self):
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, name="Draven"))
-        self.speed += 2
+        self.speed += 1
 

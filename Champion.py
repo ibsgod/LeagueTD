@@ -24,7 +24,7 @@ class Champion:
         self.ranged = ranged
         self.img = pygame.image.load("sudo.png")
         try:
-            self.img = pygame.image.load(name.lower().replace(" ", "") + ".png")
+            self.img = pygame.image.load("ChampSprites/" + name.lower().replace(" ", "") + ".png")
         except:
             pass
         self.idleimg = self.img
@@ -50,7 +50,7 @@ class Champion:
         i = 1
         while True:
             try:
-                self.atkAnim.append(pygame.image.load(self.name.lower().replace(" ", "") + str(i) + ".png"))
+                self.atkAnim.append(pygame.image.load("ChampSprites/" + self.name.lower().replace(" ", "") + str(i) + ".png"))
                 i += 1
             except:
                 break
@@ -92,6 +92,7 @@ class Champion:
                         if i.cx < self.cx:
                             self.rot -= 180
                         self.target = i
+                        break
                     if len(self.blocked) < self.block:
                         self.blocked.append(i)
             self.cx = self.x + self.size / 2

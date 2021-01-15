@@ -61,33 +61,37 @@ class Ashe(Champion):
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, name="Ashe"))
 
     def useAbility(self):
-        angles = []
-        for i in Info.enemies:
-            pee = 0
-            if i.cx - self.cx != 0:
-                pee = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
-            if i.cx < self.cx:
-                pee -= 180
-            angles.append(pee)
-        angles.sort()
-        angles += angles
-        start = 0
-        end = 0
-        tot = 0
-        _max = [(0, 0)]
-        while start < len(angles)/2 and end < len(angles):
-            if min(angles[end] - angles[start], 360 - angles[start] + angles[end]) <= 80:
-                tot += 1
-                end += 1
-                if tot > _max[0][0]:
-                    _max.clear()
-                    _max.append((tot, angles[start]))
-                elif tot == _max[0][0]:
-                    _max.append((tot, angles[start]))
-            else:
-                tot -= 1
-                start += 1
-        self.rot = _max[int(len(_max)/2)][1]
+        # pain.
+        # angles = []
+        # for i in Info.enemies:
+        #     pee = 0
+        #     if i.cx - self.cx != 0:
+        #         pee = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+        #     if i.cx < self.cx:
+        #         pee -= 180
+        #     angles.append(pee)
+        # angles.sort()
+        # angles += angles
+        # start = 0
+        # end = 0
+        # tot = 0
+        # _max = [(0, 0)]
+        # while start < len(angles)/2 and end < len(angles):
+        #     if min(angles[end] - angles[start], 360 - angles[start] + angles[end]) <= 80:
+        #         tot += 1
+        #         end += 1
+        #         if tot > _max[0][0]:
+        #             _max.clear()
+        #             _max.append((tot, angles[start]))
+        #         elif tot == _max[0][0]:
+        #             _max.append((tot, angles[start]))
+        #     else:
+        #         tot -= 1
+        #         start += 1
+        # self.rot = _max[int(len(_max)/2)][1]
+        self.rot = math.degrees(math.atan((self.cy - Info.enemies[0].cy) / (Info.enemies[0].cx - self.cx)))
+        if Info.enemies[0].cx < self.cx:
+            self.rot -= 180
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-40, self, pen=True, atk=2, speed=40, name="Ashe"))
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-30, self, pen=True, atk=2, speed=40, name="Ashe"))
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-20, self, pen=True, atk=2, speed=40, name="Ashe"))

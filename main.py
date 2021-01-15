@@ -270,9 +270,12 @@ def play():
                     if j.target is not None and Info.acTime - Info.atkTimers[j] > j.atkspd * 1000:
                         j.animStart = Info.acTime
                         j.firing = True
-                        Info.atkTimers[i] = Info.acTime
-                    if j.target is not None and Info.acTime - Info.atkTimers[j] > j.atkspd * 500:
+                        Info.atkTimers[j] = Info.acTime
+                    if j.target is not None and Info.acTime - Info.atkTimers[j] > j.atkspd * 500 and j.firing:
                         j.fire()
+                        j.firing = False
+                        if j.fireSound is not None:
+                            j.fireSound.play()
                     if Info.playing:
                         for k in j.projects:
                             k.tick()
@@ -298,8 +301,11 @@ def play():
                     Info.atkTimers[i] = Info.acTime
                     i.animStart = Info.acTime
                     i.firing = True
-                if Info.acTime - Info.atkTimers[i] > i.atkspd * 500:
+                if Info.acTime - Info.atkTimers[i] > i.atkspd * 500 and i.firing:
                     i.fire()
+                    i.firing = False
+                    if i.fireSound is not None:
+                        i.fireSound.play()
             for j in i.projects:
                 j.tick()
             if i.tick(mousePos, click) == 2:
