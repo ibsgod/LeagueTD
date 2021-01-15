@@ -20,6 +20,7 @@ class Enemy:
             self.img = pygame.image.load(name.lower().replace(" ", "") + ".png")
         except:
             pass
+        self.idleimg = self.img
         self.path = 1
         self.width = self.img.get_width()
         self.height = self.img.get_width()
@@ -34,8 +35,26 @@ class Enemy:
         self.colour = colour
         self.rot = 0
         Info.atkTimers[self] = Info.acTime
+        try:
+            self.fireSound = pygame.mixer.Sound(self.name.lower().replace(" ", "") + "atk.wav")
+        except:
+            self.fireSound = None
+        self.atkAnim = []
+        i = 1
+        while True:
+            try:
+                self.atkAnim.append(pygame.image.load(self.name.lower().replace(" ", "") + str(i) + ".png"))
+                i += 1
+            except:
+                break
+        self.animStart = None
+        self.firing = True
 
     def draw(self, screen):
+        if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:
+            self.img = self.atkAnim[len(self.atkAnim) - int((self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim))-1]
+        else:
+            self.img = self.idleimg
         screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (int(self.x), int(self.y)))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+50, 5)
@@ -108,3 +127,16 @@ class Enemy:
         if crip[0] < self.slow[0] or crip[0] == self.slow[0] and crip[1] > self.slow[1]:
             self.slow = crip
 
+    def checkRange(self, pos, rad, rect):
+        distx = abs(pos[0] - rect.x - rect.width/2)
+        disty = abs(pos[1] - rect.y - rect.height/2)
+        if distx > (rect.width / 2 + rad):
+            return False
+        if disty > (rect.height / 2 + rad):
+            return False
+        if distx <= (rect.width / 2):
+            return True
+        if disty <= (rect.height / 2):
+            return True
+        cornerDistance_sq = (distx - rect.width / 2) ** 2 + (disty - rect.height / 2) ** 2
+        return (cornerDistance_sq <= (rad ** 2))

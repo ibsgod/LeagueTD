@@ -12,6 +12,11 @@ class Box:
         self.x = x
         self.y = y
         self.img = pygame.image.load("sudo.png")
+        try:
+            self.img = pygame.image.load(name.lower().replace(" ", "") + ".png")
+        except:
+            pass
+        self.idleimg = self.img
         self.rot = 0
         self.name = "Box"
         self.atk = 0.5
@@ -26,6 +31,20 @@ class Box:
         Info.atkTimers[self] = Info.acTime
         self.hitbox = pygame.Rect(self.x, self.y, self.size, self.size)
         self.projects = []
+        try:
+            self.fireSound = pygame.mixer.Sound(self.name.lower().replace(" ", "") + "atk.wav")
+        except:
+            self.fireSound = None
+        self.atkAnim = []
+        i = 1
+        while True:
+            try:
+                self.atkAnim.append(pygame.image.load(self.name.lower().replace(" ", "") + str(i) + ".png"))
+                i += 1
+            except:
+                break
+        self.animStart = None
+        self.firing = True
 
 
     def draw(self, screen):

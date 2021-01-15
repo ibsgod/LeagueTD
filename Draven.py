@@ -9,6 +9,8 @@ class Draven(Enemy):
     def __init__(self, x, y, hp):
         super().__init__(x, y, name="Draven", hp=hp, atk=2, atkspd=1, speed=10, atkrange=200, colour=(100, 0, 0))
         Info.enemies.append(self)
+        self.passName = "Blood Rush"
+        self.passDesc = "Speed permanently increased with each attack."
 
     def tick(self, mousePos, click):
         self.target = None
@@ -32,17 +34,5 @@ class Draven(Enemy):
 
     def fire(self):
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, name="Draven"))
+        self.speed += 2
 
-    def checkRange(self, pos, rad, rect):
-        distx = abs(pos[0] - rect.x - rect.width/2)
-        disty = abs(pos[1] - rect.y - rect.height/2)
-        if distx > (rect.width / 2 + rad):
-            return False
-        if disty > (rect.height / 2 + rad):
-            return False
-        if distx <= (rect.width / 2):
-            return True
-        if disty <= (rect.height / 2):
-            return True
-        cornerDistance_sq = (distx - rect.width / 2) ** 2 + (disty - rect.height / 2) ** 2
-        return (cornerDistance_sq <= (rad ** 2))

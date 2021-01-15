@@ -24,8 +24,8 @@ class Info:
     highscore = 0
     def dieEffect(x, y, size, colour):
         for i in range(50):
-            Info.particles.append([random.randint(x - 10 * size, x + 10 * size),
-                                    random.randint(y - 2 * size, y + 2 * size),
+            Info.particles.append([random.randint(int(x) - 10 * size, int(x) + 10 * size),
+                                    random.randint(int(y) - 2 * size, int(y) + 2 * size),
                                     random.randint(-30, 30) / 10,
                                     random.randint(-60, 3) / 10,
                                     random.randint(size, size*2), (

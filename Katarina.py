@@ -3,22 +3,23 @@ from Enemy import Enemy
 from Info import Info
 
 
-class Darius(Enemy):
+class Katarina(Enemy):
     def __init__(self, x, y, hp):
-        super().__init__(x, y, name="Darius", hp=hp, atk=2, atkspd=1, speed=10, atkrange=50, colour=(100, 0, 0))
+        super().__init__(x, y, name="Katarina", hp=hp, atk=3, atkspd=1, speed=15, atkrange=50, colour=(100, 0, 0))
         Info.enemies.append(self)
-        self.prevtarg = None
         self.stack = 0
-        self.passName = "Hemorrhoids"
-        self.passDesc = "Damage Increases when attacking the same target."
+        self.passName = "Sinister Steel"
+        self.passDesc = "Every third attack slashes in a circle"
 
     def fire(self):
-        if self.target == self.prevtarg:
-            self.stack += 1
-        else:
+        if self.stack == 2:
+            for i in Info.champions:
+                if i.checkRange((self.cx, self.cy), 200, i.hitbox):
+                    i.takeDamage(self.atk)
             self.stack = 0
-        self.target.takeDamage(self.atk + self.stack)
-        self.prevtarg = self.target
+        else:
+            self.target.takeDamage(self.atk + self.stack)
+            self.stack += 1
 
     def checkRange(self, pos, rad, rect):
         distx = abs(pos[0] - rect.x - rect.width/2)

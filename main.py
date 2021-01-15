@@ -7,8 +7,10 @@ import json
 from Ashe import Ashe
 from Button import Button
 from Champion import Champion
+from Darius import Darius
 from Draven import Draven
 from Info import Info
+from Katarina import Katarina
 from Lulu import Lulu
 from MasterYi import MasterYi
 from Minion import Minion
@@ -43,7 +45,7 @@ currIter = 0
 nextTime = 0
 startLine = 0
 roundInfo = 0
-nexHp = 1
+nexHp = 3
 nexus = None
 endless = None
 placeSound = pygame.mixer.Sound("place.wav")
@@ -84,6 +86,7 @@ def menu():
     while True:
         if pygame.mixer.music.get_busy():
             pygame.mixer.music.stop()
+        pygame.mixer.music.set_volume(1)
         if len(Info.buttDict) == 0:
             Info.buttDict["newGame"] = Button(325, 375, 300, 100, screen,
                                               label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
@@ -222,8 +225,12 @@ def play():
             if playing and (len(Info.enemies) == 0 or Info.acTime > nextTime) and roundInfo[roundLine][0] != '-':
                 if roundInfo[roundLine][0] == "m":
                     Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, float(roundInfo[roundLine][1]))
-                if roundInfo[roundLine][0] == "d":
+                if roundInfo[roundLine][0] == "dr":
                     Draven(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, float(roundInfo[roundLine][1]))
+                if roundInfo[roundLine][0] == "da":
+                    Darius(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, float(roundInfo[roundLine][1]))
+                if roundInfo[roundLine][0] == "k":
+                    Katarina(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, float(roundInfo[roundLine][1]))
                 currIter += 1
                 if currIter == int(roundInfo[roundLine][3]):
                     currIter = 0
@@ -244,6 +251,10 @@ def play():
                     Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, random.randint(1, 1 + min(int(Info.acTime/10000), 5)))
                 elif r == 11:
                     Draven(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 2 + min(int(Info.acTime/10000), 10)))
+                elif r == 12:
+                    Darius(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 5 + min(int(Info.acTime/10000), 20)))
+                elif r == 13:
+                    Katarina(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + min(int(Info.acTime/10000), 25)))
         if manaTimer > Info.acTime:
             manaTimer = Info.acTime
         if Info.acTime - manaTimer > 3000:
@@ -252,18 +263,21 @@ def play():
                     i.mana += 1
             manaTimer = Info.acTime
         for i in Info.champions:
-            if i.tick(mousePos, click) == 2:
-                deselect = False
             if i.name == "Shaco" or i.name == "Clone":
                 for j in i.boxes:
                     if j.tick(mousePos, click) == 2:
                         deselect = False
                     if j.target is not None and Info.acTime - Info.atkTimers[j] > j.atkspd * 1000:
+                        j.animStart = Info.acTime
+                        j.firing = True
+                        Info.atkTimers[i] = Info.acTime
+                    if j.target is not None and Info.acTime - Info.atkTimers[j] > j.atkspd * 500:
                         j.fire()
-                        Info.atkTimers[j] = Info.acTime
                     if Info.playing:
                         for k in j.projects:
                             k.tick()
+            if i.tick(mousePos, click) == 2:
+                deselect = False
             if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000 and not (i.name == "Singed" and i.running):
                 i.animStart = Info.acTime
                 i.firing = True
@@ -279,9 +293,12 @@ def play():
         if nexus.tick(mousePos, click) == 2:
             deselect = False
         for i in Info.enemies:
-            if Info.acTime - Info.atkTimers[i] > i.atkspd * 1000:
-                Info.atkTimers[i] = Info.acTime
-                if (i.slow[0] > 0 or i.slow[1] < Info.acTime) and i.target is not None:
+            if (i.slow[0] > 0 or i.slow[1] < Info.acTime) and i.target is not None:
+                if Info.acTime - Info.atkTimers[i] > i.atkspd * 1000:
+                    Info.atkTimers[i] = Info.acTime
+                    i.animStart = Info.acTime
+                    i.firing = True
+                if Info.acTime - Info.atkTimers[i] > i.atkspd * 500:
                     i.fire()
             for j in i.projects:
                 j.tick()
@@ -471,6 +488,7 @@ def end(round):
             pygame.mixer.music.load("xeno.wav")
     else:
         pygame.mixer.music.load("pokemon.wav")
+        pygame.mixer.music.set_volume(0.3)
     pygame.mixer.music.play(-1)
     while True:
         screen.fill((150, 0, 150))
