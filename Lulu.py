@@ -47,7 +47,7 @@ class Lulu(Champion):
             surface1 = pygame.Surface((560, 560))
             surface1.set_colorkey((0, 0, 0))
             surface1.set_alpha(int((self.ultCircle[1] - Info.acTime) / 1000 * 200))
-            pygame.draw.circle(surface1, (150, 0, 150), (280, 280), 280 - int((self.ultCircle[1] - Info.acTime) / 1000 * 70))
+            pygame.draw.circle(surface1, (150, 0, 150), (280, 280), 300 - int((self.ultCircle[1] - Info.acTime) / 1000 * 70))
             screen.blit(surface1, (self.ultCircle[0][0]-280, self.ultCircle[0][1]-280))
             if self.ultCircle[1] < Info.acTime:
                 self.ultCircle = None
@@ -61,6 +61,11 @@ class Lulu(Champion):
                     if self.target is None:
                         if i.cx - self.cx != 0:
                             self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+                        else:
+                            if self.cy > i.cy:
+                                self.rot = 90
+                            else:
+                                self.rot = -90
                         if i.cx < self.cx:
                             self.rot -= 180
                         self.target = i
@@ -93,7 +98,7 @@ class Lulu(Champion):
             champ[1].hp = champ[1].maxhp
             self.ultCircle = ((champ[1].cx, champ[1].cy), Info.acTime + 1000)
             for i in Info.enemies:
-                if self.checkRange((champ[1].cx, champ[1].cy), 250, i.hitbox):
+                if self.checkRange((champ[1].cx, champ[1].cy), 280, i.hitbox):
                     i.takeDamage(1)
                     i.cripple((0, Info.acTime + 1000))
 

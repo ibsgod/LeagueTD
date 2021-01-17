@@ -65,6 +65,11 @@ class MasterYi(Champion):
                         if self.target is None:
                             if i.cx - self.cx != 0:
                                 self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+                            else:
+                                if self.cy > i.cy:
+                                    self.rot = 90
+                                else:
+                                    self.rot = -90
                             if i.cx < self.cx:
                                 self.rot -= 180
                             self.target = i

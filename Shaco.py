@@ -24,8 +24,10 @@ class Shaco(Champion):
         if hp is not None:
             self.hp = hp
             self.mana = mana
-        self.boxTimer = Info.acTime + 2000
         self.boxes = []
+        self.boxTime = 200
+        self.boxTimer = Info.acTime + self.boxTime
+
 
     def draw(self, screen):
         screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
@@ -54,6 +56,11 @@ class Shaco(Champion):
                     if self.target is None:
                         if i.cx - self.cx != 0:
                             self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+                        else:
+                            if self.cy > i.cy:
+                                self.rot = 90
+                            else:
+                                self.rot = -90
                         if i.cx < self.cx:
                             self.rot -= 180
                         self.target = i
@@ -62,6 +69,21 @@ class Shaco(Champion):
             self.cx = self.x + self.size / 2
             self.cy = self.y + self.size / 2
             self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
+            if Info.acTime > self.boxTimer:
+                if len(self.boxes) > 4:
+                    self.boxes.remove(self.boxes[0])
+                while True:
+                    rx = min(max(0, random.randint(self.cx - 120, self.cx + 80)), 1010)
+                    ry = min(max(0, random.randint(self.cy - 120, self.cy + 80)), 510)
+                    yes = False
+                    for i in Info.pathareas:
+                        if i.collidepoint(rx + 20, ry + 20):
+                            yes = True
+                            break
+                    if not yes:
+                        self.boxes.append(Box(self.cx - 20, self.cy - 20, rx, ry, self))
+                        break
+                self.boxTimer = Info.acTime + self.boxTime
             if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
                 if click:
                     Info.selected = self
@@ -73,21 +95,6 @@ class Shaco(Champion):
         self.cx = self.x + self.size / 2
         self.cy = self.y + self.size / 2
         self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
-        if Info.acTime > self.boxTimer:
-            if len(self.boxes) > 4:
-                self.boxes.remove(self.boxes[0])
-            while True:
-                rx = min(max(0, random.randint(self.cx - 120, self.cx + 80)), 1010)
-                ry = min(max(0, random.randint(self.cy - 120, self.cy + 80)), 510)
-                yes = False
-                for i in Info.pathareas:
-                    if i.collidepoint(rx + 20, ry + 20):
-                        yes = True
-                        break
-                if not yes:
-                    self.boxes.append(Box(self.cx - 20, self.cy - 20, rx, ry, self))
-                    break
-            self.boxTimer = Info.acTime + 2000
 
 
 

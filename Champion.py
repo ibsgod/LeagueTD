@@ -89,6 +89,11 @@ class Champion:
                     if self.target is None:
                         if i.cx - self.cx != 0:
                             self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+                        else:
+                            if self.cy > i.cy:
+                                self.rot = 90
+                            else:
+                                self.rot = -90
                         if i.cx < self.cx:
                             self.rot -= 180
                         self.target = i
@@ -131,6 +136,8 @@ class Champion:
         if self.hp <= 0:
             Info.dieEffect(self.cx, self.y + self.size, 2, (0, 255, 255))
             Info.champions.remove(self)
+            for j in Info.champions:
+                j.atkspd = j.oriatkspd
             if Info.selected is self:
                 Info.selected = None
             for i in Info.enemies:

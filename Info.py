@@ -22,6 +22,7 @@ class Info:
     rounds = 1
     playing = False
     highscore = 0
+    champList = ["Ashe", "Master Yi", "Sona", "Lulu", "Nasus", "Singed", "Shaco"]
     def dieEffect(x, y, size, colour):
         for i in range(50):
             Info.particles.append([random.randint(int(x) - 10 * size, int(x) + 10 * size),

@@ -17,7 +17,7 @@ class Enemy:
         self.speed = speed
         self.img = pygame.image.load("sudo.png")
         try:
-            self.img = pygame.image.load(name.lower().replace(" ", "") + ".png")
+            self.img = pygame.image.load("EnemySprites/" + name.lower().replace(" ", "") + ".png")
         except:
             pass
         self.idleimg = self.img

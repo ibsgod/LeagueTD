@@ -8,7 +8,7 @@ from Info import Info
 
 class Nasus(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Nasus", hp=15, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=4)
+        super().__init__(x, y, summ, name="Nasus", hp=15, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=40)
         self.passName = "Soul Eater"
         self.passDesc = "Gains HP when attacking"
         self.actName = "Siphoning Strike"
@@ -59,6 +59,11 @@ class Nasus(Champion):
                     if self.target is None:
                         if i.cx - self.cx != 0:
                             self.rot = math.degrees(math.atan((self.cy - i.cy) / (i.cx - self.cx)))
+                        else:
+                            if self.cy > i.cy:
+                                self.rot = 90
+                            else:
+                                self.rot = -90
                         if i.cx < self.cx:
                             self.rot -= 180
                         self.target = i
@@ -67,6 +72,9 @@ class Nasus(Champion):
             self.cx = self.x + self.size / 2
             self.cy = self.y + self.size / 2
             self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
+            if self.Qbonus >= 10 and not self.super:
+                self.super = True
+                self.maxhp = 20
             if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
                 if click:
                     Info.selected = self
@@ -78,9 +86,7 @@ class Nasus(Champion):
         self.cx = self.x + self.size / 2
         self.cy = self.y + self.size / 2
         self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
-        if self.Qbonus >= 10 and not self.super:
-            self.super = True
-            self.maxhp = 20
+
 
     def fire(self):
         self.target.takeDamage(self.atk + (self.Qbonus if self.Q else 0))

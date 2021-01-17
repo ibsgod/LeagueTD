@@ -21,6 +21,7 @@ from Sidebar import Sidebar
 from Singed import Singed
 from Sona import Sona
 from SummButton import SummButton
+from Swain import Swain
 
 pygame.init()
 pygame.mixer.init()
@@ -49,7 +50,6 @@ nexHp = 3
 nexus = None
 endless = None
 placeSound = pygame.mixer.Sound("place.wav")
-
 
 try:
     with open("state.txt") as file:
@@ -83,6 +83,7 @@ def menu():
     global startmenuTime
     global nexHp
     global endless
+    global grass
     while True:
         if pygame.mixer.music.get_busy():
             pygame.mixer.music.stop()
@@ -103,7 +104,6 @@ def menu():
             if len(data) == 0:
                 Info.buttDict["loadGame"].color = (100, 100, 100)
         screen.fill((200, 30, 150))
-
         click = False
         mousePos = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -219,6 +219,26 @@ def play():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
+            if event.type == pygame.KEYUP:
+                if int(pygame.key.name(event.key)) < 8:
+                    yes = True
+                    for i in Info.champions:
+                        if i.name == Info.champList[int(pygame.key.name(event.key))-1] and playing and i.mana >= i.actCost and i.canUse and Info.acTime - i.actCd[0] > i.actCd[1] * 1000:
+                            i.actCd = (Info.acTime, i.actCd[1])
+                            i.mana -= i.actCost
+                            i.useAbility()
+                            if i.abiSound is not None and i.name != "Nasus":
+                                if i.name == "Singed":
+                                    i.abiSound.fadeout(500)
+                                    if i.running:
+                                        i.abiSound.play()
+                                else:
+                                    i.abiSound.play()
+                            yes = False
+                            break
+                    if yes:
+                        Info.summoning = eval(Info.champList[int(pygame.key.name(event.key)) - 1].replace(" ", ""))(mousePos[0], mousePos[1], summ=True)
+                        break
 
         deselect = click and mousePos[0] < 1050 and mousePos[1] < 550
         if not endless:
@@ -231,6 +251,8 @@ def play():
                     Darius(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, float(roundInfo[roundLine][1]))
                 if roundInfo[roundLine][0] == "k":
                     Katarina(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, float(roundInfo[roundLine][1]))
+                if roundInfo[roundLine][0] == "s":
+                    Swain(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, float(roundInfo[roundLine][1]))
                 currIter += 1
                 if currIter == int(roundInfo[roundLine][3]):
                     currIter = 0
@@ -255,6 +277,9 @@ def play():
                     Darius(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 5 + min(int(Info.acTime/10000), 20)))
                 elif r == 13:
                     Katarina(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + min(int(Info.acTime/10000), 25)))
+                elif r == 13:
+                    Swain(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + min(int(Info.acTime / 10000), 25)))
+
         if manaTimer > Info.acTime:
             manaTimer = Info.acTime
         if Info.acTime - manaTimer > 3000:
@@ -405,6 +430,8 @@ def play():
                         Info.selected = None
                         Info.buttDict["sell"] = None
                         Info.buttDict["use"] = None
+                        for j in Info.champions:
+                            j.atkspd = j.oriatkspd
                         break
                     if i == "quit":
                         save()
@@ -426,16 +453,16 @@ def play():
                 if i.collidepoint(mousePos):
                     valid = False
             if mousePos[0] > 1050 or mousePos[1] > 550 or valid and Info.summoning.ranged or not (valid or Info.summoning.ranged):
-                    Info.summoning.tick(mousePos, click)
-                    Info.summoning.draw(screen)
-                    if click:
-                        if mousePos[0] < 1050 and mousePos[1] < 550:
-                            Info.selected = Info.summoning.Champ(Info.summoning.x,Info.summoning.y)
-                            Info.be -= Info.summoning.be
-                            placeSound.play()
-                        else:
-                            Info.selected = None
-                        Info.summoning = None
+                Info.summoning.tick(mousePos, click)
+                Info.summoning.draw(screen)
+                if click:
+                    if mousePos[0] < 1050 and mousePos[1] < 550:
+                        Info.selected = Info.summoning.Champ(Info.summoning.x,Info.summoning.y)
+                        Info.be -= Info.summoning.be
+                        placeSound.play()
+                    else:
+                        Info.selected = None
+                    Info.summoning = None
         if "quit" not in Info.buttDict.keys():
             Info.buttDict["quit"] = Button(1070, 80 + beLbl.get_height() + timeLbl.get_height(), 70, 50, screen,
                                            label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Quit", 1, (255, 255, 255)))
