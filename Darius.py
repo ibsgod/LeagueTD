@@ -1,3 +1,4 @@
+import pygame
 
 from Enemy import Enemy
 from Info import Info
@@ -11,6 +12,7 @@ class Darius(Enemy):
         self.stack = 0
         self.passName = "Hemorrhoids"
         self.passDesc = "Damage Increases when attacking the same target."
+        self.fireSound.set_volume(0.3)
 
     def fire(self):
         if self.target == self.prevtarg:

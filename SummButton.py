@@ -31,8 +31,8 @@ class SummButton:
                 maxbar.set_alpha(150)
                 maxbar.fill((0, 0, 0))
                 self.screen.blit(maxbar, (self.coll.x, self.coll.y))
-        self.screen.blit(
-            pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(str(Info.champList.index(self.champy.name) + 1), 1, (0, 0, 0)), (self.coll.x + 130, self.coll.y + 80))
+        self.screen.blit(pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(str(Info.champList.index(self.champy.name) + 1), True,(0, 0, 0)), (self.coll.x + 130, self.coll.y + 80))
+        self.screen.blit(pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(str(self.champy.be), True,(0, 100, 255)), (self.coll.x, self.coll.y))
         if self.coll.collidepoint(mousePos[0], mousePos[1]):
             maxbar = pygame.Surface((self.coll.width, self.coll.height))
             maxbar.set_alpha(20)

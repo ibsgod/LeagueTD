@@ -112,6 +112,8 @@ class Enemy:
         self.hp -= dmg
         if self.hp <= 0:
             Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
+            beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 20).render("+1 BE", 1, (0, 100, 255))
+            Info.gaintext.append([beLbl, int(self.cx - beLbl.get_width()/2), int(self.y), Info.acTime + 1000])
             if self in Info.enemies:
                 Info.enemies.remove(self)
             if Info.selected is self:

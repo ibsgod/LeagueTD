@@ -91,16 +91,16 @@ def menu():
         if len(Info.buttDict) == 0:
             Info.buttDict["newGame"] = Button(325, 375, 300, 100, screen,
                                               label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                                                  "New Game", 1, (255, 255, 255)))
+                                                  "New Game", True,(255, 255, 255)))
             Info.buttDict["loadGame"] = Button(325, 500, 300, 100, screen,
                                                label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                                                   "Load Game", 1, (255, 255, 255)))
+                                                   "Load Game", True,(255, 255, 255)))
             Info.buttDict["endless"] = Button(675, 375, 300, 100, screen,
                                                label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                                                   "Endless", 1, (255, 255, 255)))
+                                                   "Endless", True,(255, 255, 255)))
             Info.buttDict["quitGame"] = Button(675, 500, 300, 100, screen,
                                                label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                                                   "Quit", 1, (255, 255, 255)))
+                                                   "Quit", True,(255, 255, 255)))
             if len(data) == 0:
                 Info.buttDict["loadGame"].color = (100, 100, 100)
         screen.fill((200, 30, 150))
@@ -344,7 +344,7 @@ def play():
             Info.buttDict["use"] = None
         elif Info.buttDict["sell"] is None:
             Info.buttDict["sell"] = Button(1125, 0, 100, 40, screen,
-                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Sell", 1, (255, 255, 255)))
+                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Sell", True,(255, 255, 255)))
             Info.buttDict["use"] = Button(1075, 0, 200, 40, screen, ability=True)
         for i in Info.enemies:
             i.draw(screen)
@@ -373,6 +373,14 @@ def play():
                 Info.particles.remove(i)
         for i in Info.poison[:]:
             i.tick(screen)
+        for i in Info.gaintext[:]:
+            surf = pygame.Surface(i[0].get_size()).convert_alpha()
+            surf.fill((255, 255, 255, 245))
+            i[0].blit(surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+            screen.blit(i[0], (i[1], i[2]))
+            i[2] -= 1
+            if i[3] <= Info.acTime:
+                Info.gaintext.remove(i)
         pygame.draw.rect(screen, (0, 0, 255), (0, 550, 1200, 100))
         drew = False
         hovering = None
@@ -403,10 +411,10 @@ def play():
             "Time Played: " + str(Info.acTime // 60000).zfill(2) + ":" + str(Info.acTime // 1000 % 60).zfill(2), 1,(255, 255, 255))
         if not endless:
             roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 40).render(
-                "Round " + str(Info.rounds) + "/20", 1, (255, 255, 255))
+                "Round " + str(Info.rounds) + "/20", True,(255, 255, 255))
         else:
             roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 40).render(
-                "Endless ", 1, (255, 255, 255))
+                "Endless ", True,(255, 255, 255))
         screen.blit(beLbl, (1070, 20))
         screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
         screen.blit(roundLbl, (1070,  30 + beLbl.get_height() + timeLbl.get_height()))
@@ -434,6 +442,9 @@ def play():
                             j.atkspd = j.oriatkspd
                         break
                     if i == "quit":
+                        for i in Info.enemies:
+                            if i.name == "Swain":
+                                i.swainSound.stop()
                         save()
                         Info.buttDict.clear()
                         return
@@ -443,10 +454,10 @@ def play():
                         playing = not playing
                         if playing:
                             Info.buttDict[i].changeLabel(pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
-                                                "Pause", 1, (255, 255, 255)))
+                                                "Pause", True,(255, 255, 255)))
                         else:
                             Info.buttDict[i].changeLabel(pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
-                                "Play", 1, (255, 255, 255)))
+                                "Play", True,(255, 255, 255)))
         if Info.summoning is not None and not summClicked:
             valid = True
             for i in Info.pathareas:
@@ -465,15 +476,15 @@ def play():
                     Info.summoning = None
         if "quit" not in Info.buttDict.keys():
             Info.buttDict["quit"] = Button(1070, 80 + beLbl.get_height() + timeLbl.get_height(), 70, 50, screen,
-                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Quit", 1, (255, 255, 255)))
+                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Quit", True,(255, 255, 255)))
         if not endless:
             if "start" not in Info.buttDict.keys() or Info.buttDict["start"] is None and not playing:
                 Info.buttDict["start"] = Button(1160, 80 + beLbl.get_height() + timeLbl.get_height(), 130, 50, screen,
-                                            label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Start Round", 1, (255, 255, 255)), color=(0, 200, 0))
+                                            label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Start Round", True,(255, 255, 255)), color=(0, 200, 0))
         elif endless and "pause" not in Info.buttDict.keys() or Info.buttDict["pause"] is None:
             Info.buttDict["pause"] = Button(1160, 80 + beLbl.get_height() + timeLbl.get_height(), 130, 50, screen,
                                             label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
-                                                "Start", 1, (255, 255, 255)), color=(0, 200, 0))
+                                                "Start", True,(255, 255, 255)), color=(0, 200, 0))
         if nexus.hp <= 0:
             if not endless:
                 end(Info.rounds)
@@ -528,10 +539,10 @@ def end(round):
         Info.buttDict.clear()
         Info.buttDict["menu"] = Button((1300 - 400) / 2, 375, 400, 100, screen,
                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                                              "Menu", 1, (255, 255, 255)))
+                                              "Menu", True,(255, 255, 255)))
         Info.buttDict["quit"] = Button((1300 - 400) / 2, 500, 400, 100, screen,
                                           label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                                          "Quit", 1, (255, 255, 255)))
+                                          "Quit", True,(255, 255, 255)))
         mousePos = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -551,7 +562,7 @@ def end(round):
                 screen.blit(pygame.transform.rotate(pygame.transform.scale(pygame.image.load("sadcat.png"), (184, 173)), 10 * rotflip), (70, 400))
             else:
                 roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                    "POG! You did it!", 1, (255, 255, 255))
+                    "POG! You did it!", True,(255, 255, 255))
                 screen.blit(roundLbl, (int((1300 - roundLbl.get_width()) / 2), int((650 - roundLbl.get_height()) / 3)))
                 screen.blit(pygame.transform.rotate(pygame.image.load("pogchamp.png"), 20 * rotflip), (5, 100))
                 screen.blit(pygame.transform.rotate(pygame.image.load("poggies.png"), -30 * rotflip), (1000, 50))
@@ -562,7 +573,7 @@ def end(round):
             save()
             if Info.acTime > Info.highscore:
                 roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                    "New highscore! You lasted " + format(Info.acTime/1000, ".1f") + " seconds!", 1, (255, 255, 255))
+                    "New highscore! You lasted " + format(Info.acTime/1000, ".1f") + " seconds!", True,(255, 255, 255))
                 screen.blit(roundLbl, (int((1300 - roundLbl.get_width()) / 2), int((650 - roundLbl.get_height()) / 3)))
                 screen.blit(pygame.transform.rotate(pygame.image.load("pogchamp.png"), 20 * rotflip), (5, 100))
                 screen.blit(pygame.transform.rotate(pygame.image.load("poggies.png"), -30 * rotflip), (1000, 50))
@@ -573,7 +584,7 @@ def end(round):
                                             10 * rotflip), (50, 400))
             else:
                 roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
-                    "Oof! You lasted " + format(Info.acTime/1000, ".1f") + " seconds!", 1, (255, 255, 255))
+                    "Oof! You lasted " + format(Info.acTime/1000, ".1f") + " seconds!", True,(255, 255, 255))
                 screen.blit(roundLbl, (int((1300 - roundLbl.get_width()) / 2), int((650 - roundLbl.get_height()) / 3)))
                 screen.blit(pygame.transform.rotate(pygame.image.load("pepehands.gif"), 20 * rotflip), (100, 100))
                 screen.blit(pygame.transform.rotate(pygame.image.load("pepejuice.gif"), -30 * rotflip), (1000, 400))

@@ -13,6 +13,8 @@ class Swain(Enemy):
         Info.enemies.append(self)
         self.passName = "Ravenous Flock"
         self.passDesc = "Continously drains health from nearby champions."
+        self.swainSound = pygame.mixer.Sound("swainsound.wav")
+        self.stopped = False
 
     def draw(self, screen):
         if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:
@@ -53,11 +55,19 @@ class Swain(Enemy):
                     self.target = i
         if self.target is None:
             self.move()
+        yes = False
         if self.slow[0] > 0 or self.slow[1] < Info.acTime:
             for i in Info.champions:
                 if self.checkRange((self.cx, self.cy), self.atkrange, i.hitbox):
-                    i.takeDamage(0.05)
+                    i.takeDamage(0.07)
                     self.hp = min(self.maxhp, self.hp + 0.05)
+                    yes = True
+        if yes and not self.stopped:
+            self.swainSound.play(-1)
+            self.stopped = True
+        elif not yes:
+            self.swainSound.stop()
+            self.stopped = False
         if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
             if click:
                 Info.selected = self
@@ -68,3 +78,17 @@ class Swain(Enemy):
     def fire(self):
         self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, name="Swain"))
 
+    def takeDamage(self, dmg):
+        self.hp -= dmg
+        if self.hp <= 0:
+            Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
+            self.swainSound.stop()
+            beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 20).render("+1 BE", 1, (0, 100, 255))
+            Info.gaintext.append([beLbl, int(self.cx), int(self.cy), Info.acTime + 1000])
+            if self in Info.enemies:
+                Info.enemies.remove(self)
+            if Info.selected is self:
+                Info.selected = None
+            for i in Info.champions:
+                if self is i.target:
+                    i.target = None

@@ -25,7 +25,7 @@ class Shaco(Champion):
             self.hp = hp
             self.mana = mana
         self.boxes = []
-        self.boxTime = 200
+        self.boxTime = 2000
         self.boxTimer = Info.acTime + self.boxTime
 
 
