@@ -29,6 +29,7 @@ class Singed(Champion):
         self.speed = 20
         self.path = 0
         min = (999999, None)
+        # setting initial position on closest path keypoint
         for i in range(len(Info.enemypath)):
             if (self.x - Info.enemypath[i][0]) ** 2 + (self.y - Info.enemypath[i][1]) ** 2 < min[0]:
                 min = ((self.x - Info.enemypath[i][0]) ** 2 + (self.y - Info.enemypath[i][1]) ** 2, Info.enemypath[i])
@@ -66,6 +67,7 @@ class Singed(Champion):
                 pygame.draw.rect(screen, (255, 0, 0), (i[0] - 5, i[1] - 5, 10, 10))
 
     def tick(self, mousePos, click):
+        # determining direction and movement between path points
         if self.path == len(Info.enemypath)-1:
             self.dir = -1
         if self.path == 1:
@@ -74,6 +76,7 @@ class Singed(Champion):
             self.running = False
         if self.running and Info.playing:
             self.mana = max(0, self.mana-0.05)
+            # determining x and y velocity to reach the next path keypoint
             if self.cx != Info.enemypath[self.path][0]:
                 if abs(Info.enemypath[self.path][0] - (self.cx)) > self.speed:
                     self.x += self.speed * (Info.enemypath[self.path][0] - (self.cx)) / abs(
@@ -105,6 +108,7 @@ class Singed(Champion):
                     if len(self.blocked) < self.block and not self.running:
                         self.blocked.append(i)
             if Info.playing:
+                # creating Poison objects at random positions in a given range behind Singed
                 Info.poison.append(Poison(self.cx, self.cy + 10,
                       random.randint(-10, 3) / 10 * -self.dir,
                       random.randint(-10, 3) / 10,
@@ -121,6 +125,7 @@ class Singed(Champion):
                     return 2
                 return 1
         else:
+            # limiting initial summonning position to path keypoints
             min = (999999, None)
             for i in Info.enemypath[1:]:
                 if (mousePos[0] - i[0])**2 + (mousePos[1] - i[1])**2 < min[0]:

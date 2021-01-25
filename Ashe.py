@@ -24,9 +24,6 @@ class Ashe(Champion):
             self.hp = hp
             self.mana = mana
 
-
-
-
     def tick(self, mousePos, click):
         self.canUse = len(Info.enemies) > 0
         if not self.summ:
@@ -63,7 +60,7 @@ class Ashe(Champion):
         self.hitbox = pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
 
     def fire(self):
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot, self, name="Ashe"))
 
     def useAbility(self):
         # pain.
@@ -97,12 +94,12 @@ class Ashe(Champion):
         self.rot = math.degrees(math.atan((self.cy - Info.enemies[0].cy) / (Info.enemies[0].cx - self.cx)))
         if Info.enemies[0].cx < self.cx:
             self.rot -= 180
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-40, self, pen=True, atk=2, speed=40, name="Ashe"))
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-30, self, pen=True, atk=2, speed=40, name="Ashe"))
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-20, self, pen=True, atk=2, speed=40, name="Ashe"))
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot-10, self, pen=True, atk=2, speed=40, name="Ashe"))
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, pen=True, atk=2, speed=40, name="Ashe"))
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot+10, self, pen=True, atk=2, speed=40, name="Ashe"))
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot+20, self, pen=True, atk=2, speed=40, name="Ashe"))
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot+30, self, pen=True, atk=2, speed=40, name="Ashe"))
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot+40, self, pen=True, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot-40, self, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot-30, self, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot-20, self, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot-10, self, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot, self, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot+10, self, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot+20, self, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot+30, self, atk=2, speed=40, name="Ashe"))
+        self.projects.append(Projectile(self.cx-30, self.cy-30, self.rot+40, self, atk=2, speed=40, name="Ashe"))

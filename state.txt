@@ -1,1 +1,1 @@
-{"champions": [], "be": 1000, "acTime": 0, "rounds": 1, "startLine": 0, "nexHp": 3}
+{"champions": [{"name": "Nasus", "x": 571.0, "y": 219.0, "hp": 11.5, "mana": 9, "Qbonus": 1}], "be": 1, "acTime": 19947, "rounds": 2, "startLine": 2, "nexHp": 3}

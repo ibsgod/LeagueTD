@@ -13,8 +13,14 @@ class Info:
                  pygame.Rect(9 * 75, 3 * 75, 5 * 75, 1 * 75), pygame.Rect(9 * 75, 6 * 75, 4 * 75, 1 * 75),
                  pygame.Rect(12 * 75, 1 * 75, 1 * 75, 5 * 75), pygame.Rect(13 * 75, 1 * 75, 1 * 75, 1 * 75),
                  pygame.Rect(10 * 75, 0 * 75, 1 * 75, 3 * 75)]
+    towerspots = [pygame.Rect(2 * 75, 6 * 75, 75, 75), pygame.Rect(4 * 75, 6 * 75, 75, 75),
+                  pygame.Rect(6 * 75, 2 * 75, 75, 75), pygame.Rect(7 * 75, 2 * 75, 75, 75),
+                  pygame.Rect(3 * 75, 4 * 75, 75, 75), pygame.Rect(4 * 75, 3 * 75, 75, 75),
+                  pygame.Rect(7 * 75, 3 * 75, 75, 75), pygame.Rect(6 * 75, 4 * 75, 75, 75),
+                  pygame.Rect(9 * 75, 5 * 75, 75, 75), pygame.Rect(10 * 75, 4 * 75, 75, 75),
+                  pygame.Rect(6 * 75, 5 * 75, 75, 75), pygame.Rect(7 * 75, 5 * 75, 75, 75)]
     buttDict = {}
-    be = 1000
+    be = 5
     summoning = None
     acTime = 0
     particles = []

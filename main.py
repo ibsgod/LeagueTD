@@ -23,6 +23,7 @@ from Sona import Sona
 from SummButton import SummButton
 from Swain import Swain
 
+# initial values for game and setting up game window
 pygame.init()
 pygame.mixer.init()
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -41,6 +42,7 @@ playing = False
 data = ""
 img = pygame.image.load("bg.png")
 Info.rounds = 1
+# variables for processing round data
 roundLine = 0
 currIter = 0
 nextTime = 0
@@ -50,7 +52,11 @@ nexHp = 3
 nexus = None
 endless = None
 placeSound = pygame.mixer.Sound("place.wav")
+bg = pygame.image.load("menuscreen.png")
+title = pygame.image.load("title.png").convert_alpha()
+sb = pygame.image.load("sidebar.png")
 
+# loading game data if it exists
 try:
     with open("state.txt") as file:
         data = json.load(file)
@@ -62,14 +68,14 @@ try:
         Info.highscore = int(file.readline())
 except:
     pass
-
+# loading rounds data
 with open("rounds.txt") as file:
     roundInfo = file.readlines()
     space = lambda x: x.split(' ')
     removeNewLine = lambda x: x.replace('\n', '')
     roundInfo = list(map(removeNewLine, roundInfo))
     roundInfo = list(map(space, roundInfo))
-
+# main menu
 def menu():
     global click
     global mousePos
@@ -88,6 +94,7 @@ def menu():
         if pygame.mixer.music.get_busy():
             pygame.mixer.music.stop()
         pygame.mixer.music.set_volume(1)
+        # initializing objects from custom Button class
         if len(Info.buttDict) == 0:
             Info.buttDict["newGame"] = Button(325, 375, 300, 100, screen,
                                               label=pygame.font.SysFont("Microsoft Yahei UI Light", 50).render(
@@ -104,6 +111,9 @@ def menu():
             if len(data) == 0:
                 Info.buttDict["loadGame"].color = (100, 100, 100)
         screen.fill((200, 30, 150))
+        screen.blit(bg, (0, 0))
+        title.set_alpha(min(int(pygame.time.get_ticks()/10), 255))
+        screen.blit(title, ((1300 - title.get_width())/2, 100))
         click = False
         mousePos = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -112,13 +122,13 @@ def menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
         Info.champions.clear()
-
+        # checking for button clicks
         for i in Info.buttDict:
             if Info.buttDict[i].tick(mousePos, click):
                 if i == "newGame":
                     endless = False
                     Info.rounds = 1
-                    Info.be = 1000
+                    Info.be = 5
                     Info.acTime = 0
                     roundLine = 0
                     currIter = 0
@@ -163,7 +173,7 @@ def menu():
 
         pygame.display.update()
         pygame.time.Clock().tick(60)
-
+# main function for game loop
 def play():
     global mousePos
     global click
@@ -182,12 +192,13 @@ def play():
     startTime = 0
     hovering = None
     playing = False
-    nexus = Nexus(Info.enemypath[len(Info.enemypath)-1][0] - 35, Info.enemypath[len(Info.enemypath)-1][1] - 35, nexHp)
+    nexus = Nexus(Info.enemypath[len(Info.enemypath)-1][0] - 100, Info.enemypath[len(Info.enemypath)-1][1] - 60, nexHp)
     Info.enemies.clear()
     Info.particles.clear()
     Info.poison.clear()
     Info.buttDict.clear()
-    Info.buttDict["Ashe"] = SummButton(0, 550, screen, Ashe, img="asheicon.png")
+    # creating objects of custom buttons for summoning champs
+    Info.buttDict["Ashe"] = SummButton(0, 550, screen, Ashe)
     Info.buttDict["MasterYi"] = SummButton(150, 550, screen, MasterYi)
     Info.buttDict["Sona"] = SummButton(300, 550, screen, Sona)
     Info.buttDict["Lulu"] = SummButton(450, 550, screen, Lulu)
@@ -202,13 +213,15 @@ def play():
         pygame.mixer.music.load("kirby.wav")
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
-
+    # game loop
     while True:
         screen.fill((200, 30, 150))
         screen.blit(img, (0, 0))
+        screen.blit(sb, (1050, 0))
         mousePos = pygame.mouse.get_pos()
         currentTime = pygame.time.get_ticks()
         Info.playing = playing
+        # Info.acTime holds the game playtime, EXCLUDING any pauses
         if playing:
             Info.acTime += pygame.time.get_ticks() - startTime
         startTime = currentTime
@@ -219,28 +232,42 @@ def play():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
+            # checking for keyboard input
             if event.type == pygame.KEYUP:
-                if int(pygame.key.name(event.key)) < 8:
-                    yes = True
-                    for i in Info.champions:
-                        if i.name == Info.champList[int(pygame.key.name(event.key))-1] and playing and i.mana >= i.actCost and i.canUse and Info.acTime - i.actCd[0] > i.actCd[1] * 1000:
-                            i.actCd = (Info.acTime, i.actCd[1])
-                            i.mana -= i.actCost
-                            i.useAbility()
-                            if i.abiSound is not None and i.name != "Nasus":
-                                if i.name == "Singed":
-                                    i.abiSound.fadeout(500)
-                                    if i.running:
+                try:
+                    if int(pygame.key.name(event.key)) < 8:
+                        yes = True
+                        # summoning a champ if not already on map, using its ability if it is
+                        for i in Info.champions:
+                            if i.name == Info.champList[int(pygame.key.name(event.key))-1] and playing and i.mana >= i.actCost and i.canUse and Info.acTime - i.actCd[0] > i.actCd[1] * 1000:
+                                i.actCd = (Info.acTime, i.actCd[1])
+                                i.mana -= i.actCost
+                                i.useAbility()
+                                if i.abiSound is not None and i.name != "Nasus":
+                                    if i.name == "Singed":
+                                        i.abiSound.fadeout(500)
+                                        if i.running:
+                                            i.abiSound.play()
+                                    else:
                                         i.abiSound.play()
-                                else:
-                                    i.abiSound.play()
-                            yes = False
+                                yes = False
+                                break
+                        if yes:
+                            Info.summoning = eval(Info.champList[int(pygame.key.name(event.key)) - 1].replace(" ", ""))(mousePos[0], mousePos[1], summ=True)
+                            has = False
+                            for i in Info.champions:
+                                if isinstance(i, Info.summoning.Champ):
+                                    has = True
+                            if has or Info.be < Info.summoning.be:
+                                Info.summoning = None
+                                Info.selected = None
                             break
-                    if yes:
-                        Info.summoning = eval(Info.champList[int(pygame.key.name(event.key)) - 1].replace(" ", ""))(mousePos[0], mousePos[1], summ=True)
-                        break
-
+                except:
+                    pass
+                if event.key == pygame.K_m:
+                    pygame.mixer.music.pause() if pygame.mixer.music.get_busy() else pygame.mixer.music.unpause()
         deselect = click and mousePos[0] < 1050 and mousePos[1] < 550
+        # processing rounds.txt to create enemies for campaign mode
         if not endless:
             if playing and (len(Info.enemies) == 0 or Info.acTime > nextTime) and roundInfo[roundLine][0] != '-':
                 if roundInfo[roundLine][0] == "m":
@@ -266,6 +293,7 @@ def play():
                 roundLine += 1
                 Info.rounds += 1
                 startLine = roundLine
+        # random enemy generation if endless mode
         else:
             if playing:
                 r = random.randint(1, 600 - min(int(Info.acTime/4000), 400))
@@ -279,7 +307,7 @@ def play():
                     Katarina(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + min(int(Info.acTime/10000), 25)))
                 elif r == 13:
                     Swain(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + min(int(Info.acTime / 10000), 25)))
-
+        # champions gan mana over time
         if manaTimer > Info.acTime:
             manaTimer = Info.acTime
         if Info.acTime - manaTimer > 3000:
@@ -287,6 +315,7 @@ def play():
                 if i.name != "Clone" and i.mana < i.maxmana:
                     i.mana += 1
             manaTimer = Info.acTime
+        # calling the tick method for champions
         for i in Info.champions:
             if i.name == "Shaco" or i.name == "Clone":
                 for j in i.boxes:
@@ -306,6 +335,7 @@ def play():
                             k.tick()
             if i.tick(mousePos, click) == 2:
                 deselect = False
+            # calling fire() on champions ready to attack
             if i.target is not None and Info.acTime - Info.atkTimers[i] > i.atkspd * 1000 and not (i.name == "Singed" and i.running):
                 i.animStart = Info.acTime
                 i.firing = True
@@ -315,12 +345,15 @@ def play():
                 i.firing = False
                 if i.fireSound is not None:
                     i.fireSound.play()
+            # calling tick() on all projectiles
             if Info.playing:
                 for j in i.projects:
                     j.tick()
         if nexus.tick(mousePos, click) == 2:
             deselect = False
+        # calling tick() on all enemies
         for i in Info.enemies:
+            # checking if enemy is stunned
             if (i.slow[0] > 0 or i.slow[1] < Info.acTime) and i.target is not None:
                 if Info.acTime - Info.atkTimers[i] > i.atkspd * 1000:
                     Info.atkTimers[i] = Info.acTime
@@ -335,10 +368,12 @@ def play():
                 j.tick()
             if i.tick(mousePos, click) == 2:
                 deselect = False
+        # logic for selecting entities and summoning champs
         if deselect:
             Info.selected = None
         if Info.summoning is not None:
             Info.selected = Info.summoning
+        # sidebar only appears when something is selected
         if Info.selected is None or not isinstance(Info.selected, Champion) or Info.selected.name == "Clone" or Info.summoning is not None:
             Info.buttDict["sell"] = None
             Info.buttDict["use"] = None
@@ -346,6 +381,7 @@ def play():
             Info.buttDict["sell"] = Button(1125, 0, 100, 40, screen,
                                            label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Sell", True,(255, 255, 255)))
             Info.buttDict["use"] = Button(1075, 0, 200, 40, screen, ability=True)
+        # drawing all entities to the screen
         for i in Info.enemies:
             i.draw(screen)
         for i in Info.champions:
@@ -364,6 +400,7 @@ def play():
             for j in i.projects:
                 j.draw(screen)
         nexus.draw(screen)
+        # draw all particles to screen
         for i in Info.particles[:]:
             pygame.draw.circle(screen, i[5], (int(i[0]), int(i[1])), i[4])
             if Info.playing:
@@ -373,6 +410,7 @@ def play():
                 Info.particles.remove(i)
         for i in Info.poison[:]:
             i.tick(screen)
+        # draw the text when enemies are killed
         for i in Info.gaintext[:]:
             surf = pygame.Surface(i[0].get_size()).convert_alpha()
             surf.fill((255, 255, 255, 245))
@@ -381,7 +419,6 @@ def play():
             i[2] -= 1
             if i[3] <= Info.acTime:
                 Info.gaintext.remove(i)
-        pygame.draw.rect(screen, (0, 0, 255), (0, 550, 1200, 100))
         drew = False
         hovering = None
         summClicked = False
@@ -389,38 +426,44 @@ def play():
             Info.buttDict["start"] = None
         else:
             Info.poison.clear()
+        # checking for all summoning button clicks
         for i in Info.buttDict:
             if isinstance(Info.buttDict[i], SummButton):
                 val = Info.buttDict[i].tick(mousePos, click)
                 if val >= 1:
+                    # showing champ info in sidebar if player hovers over champ in summoning bar
                     sidebar.draw(screen, Info.buttDict[i].champy, hover=True)
                     hovering = Info.buttDict[i].champy
                     Info.buttDict["sell"] = None
                     Info.buttDict["use"] = None
                     drew = True
                     if val == 2:
+                        # creating champ object when summoning that follows mouse
                         Info.summoning = Info.buttDict[i].Champ(mousePos[0], mousePos[1], summ=True)
                         summClicked = True
+        # showing info on sidebar
         if not drew and Info.summoning is None:
             sidebar.draw(screen, Info.selected)
         elif not drew:
             sidebar.draw(screen, Info.selected, hover=True)
-        pygame.draw.rect(screen, (0, 0, 255), (1050, 0, 250, 200))
-        beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Blue Essence: " + str(Info.be), 1,(255, 255, 255))
-        timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
+        # GUI for top right
+        beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 25).render("Blue Essence: " + str(Info.be), 1,(255, 255, 255))
+        timeLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 25).render(
             "Time Played: " + str(Info.acTime // 60000).zfill(2) + ":" + str(Info.acTime // 1000 % 60).zfill(2), 1,(255, 255, 255))
         if not endless:
-            roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 40).render(
+            roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 35).render(
                 "Round " + str(Info.rounds) + "/20", True,(255, 255, 255))
         else:
-            roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 40).render(
+            roundLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 35).render(
                 "Endless ", True,(255, 255, 255))
-        screen.blit(beLbl, (1070, 20))
-        screen.blit(timeLbl, (1070, 25 + beLbl.get_height()))
-        screen.blit(roundLbl, (1070,  30 + beLbl.get_height() + timeLbl.get_height()))
+        screen.blit(beLbl, (1080, 30))
+        screen.blit(timeLbl, (1080, 35 + beLbl.get_height()))
+        screen.blit(roundLbl, (1080, 40 + beLbl.get_height() + timeLbl.get_height()))
+        # checking for all non-summoning button clicks
         for i in Info.buttDict:
             if Info.buttDict[i] is not None:
                 if Info.buttDict[i].tick(mousePos, click):
+                    # using selected champ's ability
                     if i == "use" and playing and Info.selected.mana >= Info.selected.actCost and Info.selected.canUse:
                         Info.selected.actCd = (Info.acTime, Info.selected.actCd[1])
                         Info.selected.mana -= Info.selected.actCost
@@ -432,6 +475,7 @@ def play():
                                     Info.selected.abiSound.play()
                             else:
                                 Info.selected.abiSound.play()
+                    # selling selected champ
                     if i == "sell":
                         Info.be += Info.selected.be
                         Info.champions.remove(Info.selected)
@@ -458,12 +502,18 @@ def play():
                         else:
                             Info.buttDict[i].changeLabel(pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
                                 "Play", True,(255, 255, 255)))
+        # creating a champion when a valid spot is chosen to summon
         if Info.summoning is not None and not summClicked:
-            valid = True
-            for i in Info.pathareas:
-                if i.collidepoint(mousePos):
-                    valid = False
-            if mousePos[0] > 1050 or mousePos[1] > 550 or valid and Info.summoning.ranged or not (valid or Info.summoning.ranged):
+            valid = False
+            if not Info.summoning.ranged:
+                for i in Info.pathareas:
+                    if i.collidepoint(mousePos):
+                        valid = True
+            else:
+                for i in Info.towerspots:
+                    if i.collidepoint(mousePos):
+                        valid = True
+            if mousePos[0] > 1050 or mousePos[1] > 550 or valid:
                 Info.summoning.tick(mousePos, click)
                 Info.summoning.draw(screen)
                 if click:
@@ -474,17 +524,19 @@ def play():
                     else:
                         Info.selected = None
                     Info.summoning = None
+        # if statements make sure that button objects are only created on first iteration of loop to prevent repetitive object creation
         if "quit" not in Info.buttDict.keys():
-            Info.buttDict["quit"] = Button(1070, 80 + beLbl.get_height() + timeLbl.get_height(), 70, 50, screen,
+            Info.buttDict["quit"] = Button(1070, 85 + beLbl.get_height() + timeLbl.get_height(), 70, 50, screen,
                                            label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Quit", True,(255, 255, 255)))
         if not endless:
             if "start" not in Info.buttDict.keys() or Info.buttDict["start"] is None and not playing:
-                Info.buttDict["start"] = Button(1160, 80 + beLbl.get_height() + timeLbl.get_height(), 130, 50, screen,
+                Info.buttDict["start"] = Button(1160, 85 + beLbl.get_height() + timeLbl.get_height(), 130, 50, screen,
                                             label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render("Start Round", True,(255, 255, 255)), color=(0, 200, 0))
         elif endless and "pause" not in Info.buttDict.keys() or Info.buttDict["pause"] is None:
-            Info.buttDict["pause"] = Button(1160, 80 + beLbl.get_height() + timeLbl.get_height(), 130, 50, screen,
+            Info.buttDict["pause"] = Button(1160, 85 + beLbl.get_height() + timeLbl.get_height(), 130, 50, screen,
                                             label=pygame.font.SysFont("Microsoft Yahei UI Light", 30).render(
                                                 "Start", True,(255, 255, 255)), color=(0, 200, 0))
+        # end game if nexus falls
         if nexus.hp <= 0:
             if not endless:
                 end(Info.rounds)
@@ -493,7 +545,7 @@ def play():
             return
         pygame.display.update()
         pygame.time.Clock().tick(60)
-
+# saving game data when quitting
 def save():
     if not endless:
         datadic = {}
@@ -513,7 +565,7 @@ def save():
     else:
         with open("highscore.txt", "w") as file:
             file.write(str(max(Info.highscore, Info.acTime)))
-
+# end screen
 def end(round):
     global click
     global mousePos
@@ -549,6 +601,9 @@ def end(round):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
+            if event == pygame.KEYDOWN:
+                if event.key == pygame.K_m:
+                    pygame.mixer.music.pause() if pygame.mixer.music.get_busy() else pygame.mixer.music.unpause()
         if pygame.time.get_ticks() - rotTime > 500:
             rotflip *= -1
             rotTime = pygame.time.get_ticks()

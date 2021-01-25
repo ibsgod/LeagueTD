@@ -82,6 +82,7 @@ class Swain(Enemy):
         self.hp -= dmg
         if self.hp <= 0:
             Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
+            Info.be += 1
             self.swainSound.stop()
             beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 20).render("+1 BE", 1, (0, 100, 255))
             Info.gaintext.append([beLbl, int(self.cx), int(self.cy), Info.acTime + 1000])

@@ -62,7 +62,7 @@ class Sona(Champion):
         self.cy = self.y + self.size / 2
 
     def fire(self):
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self))
+        self.projects.append(Projectile(self.cx-20, self.cy-20, self.rot, self, name="Sona"))
 
     def useAbility(self):
         # struggle.
@@ -96,5 +96,5 @@ class Sona(Champion):
         self.rot = math.degrees(math.atan((self.cy - Info.enemies[0].cy) / (Info.enemies[0].cx - self.cx)))
         if Info.enemies[0].cx < self.cx:
             self.rot -= 180
-        self.projects.append(Projectile(self.cx-7, self.cy-7, self.rot, self, pen=True, atk=2, speed=60, name="Sona"))
+        self.projects.append(Projectile(self.cx-75, self.cy-75, self.rot, self, pen=True, atk=2, speed=60, name="sonault"))
 

@@ -33,8 +33,11 @@ class MasterYi(Champion):
         if len(self.Qed) == self.Qlim:
             screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         elif self.target is not None:
-            # screen.blit(tup[0], (self.target.cx - self.size/2, self.target.cy - self.size/2))
              pygame.draw.line(screen, (255, 255, 0), self.Qline[0], self.Qline[1], 5)
+        if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:
+            self.img = self.atkAnim[len(self.atkAnim) - int((self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim))-1]
+        else:
+            self.img = self.idleimg
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange, 5)
             pygame.draw.circle(screen, (0, 255, 0), (int(self.cx), int(self.cy)), self.atkrange*2, 5)

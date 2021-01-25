@@ -91,6 +91,8 @@ class Enemy:
         newspeed = self.speed
         if self.slow[1] > Info.acTime:
             newspeed *= self.slow[0]
+        else:
+            self.slow = (1, 0)
         if self.path < len(Info.enemypath):
             if self.cx != Info.enemypath[self.path][0]:
                 if abs(Info.enemypath[self.path][0] - (self.cx)) > newspeed:
@@ -113,6 +115,7 @@ class Enemy:
         if self.hp <= 0:
             Info.dieEffect(self.cx, self.y + self.size, 2, self.colour)
             beLbl = pygame.font.SysFont("Microsoft Yahei UI Light", 20).render("+1 BE", 1, (0, 100, 255))
+            Info.be += 1
             Info.gaintext.append([beLbl, int(self.cx - beLbl.get_width()/2), int(self.y), Info.acTime + 1000])
             if self in Info.enemies:
                 Info.enemies.remove(self)

@@ -1,4 +1,5 @@
 import math
+import random
 
 import pygame
 
@@ -12,25 +13,28 @@ class Projectile:
         self.angle = angle
         self.rotate = angle
         self.speed = speed
-        self.size = 15
         self.pen = pen
         self.atk = atk
         self.tower = tower
         self.img = pygame.image.load('egg.png')
         if tower.name == "Ashe":
             self.img = pygame.image.load('asheprojectile.png')
+        if name == "Sona":
+            self.img = pygame.transform.scale(pygame.image.load('sonaprojectile' + str(random.randint(1,2)) + '.png'), (40, 40))
+        if name == "sonault":
+            self.img = pygame.image.load('sonault.png')
+        self.size = self.img.get_width()
+        if self.angle < -90 and self.angle > -270:
+            self.img = pygame.transform.flip(self.img, False, True)
         self.hitbox = pygame.Rect(self.x, self.y, self.size, self.size)
         self.hit = []
         self.name = name
-
-    def rot_center(self, image, angle):
-        rotated_image = pygame.transform.rotate(image, angle)
-        new_rect = rotated_image.get_rect(center=image.get_rect().center)
-        return rotated_image, (new_rect[0] + self.x, new_rect[1] + self.y)
+        self.rotated_image = pygame.transform.rotate(self.img, self.rotate)
 
     def draw(self, screen):
-        tup = self.rot_center(self.img, self.rotate)
-        screen.blit(tup[0], tup[1])
+        self.new_rect = self.rotated_image.get_rect(center=self.img.get_rect().center)
+        self.tup = (self.rotated_image, (self.new_rect[0] + self.x, self.new_rect[1] + self.y))
+        screen.blit(self.tup[0], self.tup[1])
 
     def tick(self):
         self.x += math.cos(math.radians(self.angle)) * self.speed
@@ -44,9 +48,8 @@ class Projectile:
                 if i.hitbox.colliderect(self.hitbox) and i not in self.hit:
                     if self.name == "Ashe":
                         i.cripple((0.5, Info.acTime + 3000))
-                    if self.name == "Sona":
+                    if self.name == "sonault":
                         i.cripple((0, Info.acTime + 3000))
-
                     i.takeDamage(self.tower.atk * self.atk)
                     if not self.pen:
                         self.tower.projects.remove(self)

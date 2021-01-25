@@ -11,7 +11,6 @@ class Katarina(Enemy):
         self.stack = -1
         self.passName = "Sinister Steel"
         self.passDesc = "Every third attack slashes in a circle"
-        self.whirl = pygame.image.load("katawhirl.png")
 
     def draw(self, screen):
         if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:

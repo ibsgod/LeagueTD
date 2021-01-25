@@ -13,7 +13,7 @@ class Nasus(Champion):
         self.passDesc = "Gains HP when attacking"
         self.actName = "Siphoning Strike"
         self.Qbonus = 1
-        self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Damage permanently increased if it kills enemy. Super Form at 10 stacks."
+        self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Permanently increased if it kills enemy. Super Form at 10 stacks."
         self.actCd = (Info.acTime, 3)
         self.actCost = 2
         self.Champ = Nasus
@@ -32,7 +32,7 @@ class Nasus(Champion):
                 (self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim)) - 1]
         else:
             self.img = self.idleimg
-        self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Damage permanently increased if it kills enemy. Super Form at 10 stacks."
+        self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Permanently increased if it kills enemy. Super Form at 10 stacks."
         screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange, 5)
