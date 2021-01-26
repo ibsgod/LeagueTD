@@ -507,11 +507,11 @@ def play():
             valid = False
             if not Info.summoning.ranged:
                 for i in Info.pathareas:
-                    if i.collidepoint(mousePos):
+                    if i.collidepoint(mousePos[0], mousePos[1] + 50):
                         valid = True
             else:
                 for i in Info.towerspots:
-                    if i.collidepoint(mousePos):
+                    if i.collidepoint(mousePos[0], mousePos[1] + 50):
                         valid = True
             if mousePos[0] > 1050 or mousePos[1] > 550 or valid:
                 Info.summoning.tick(mousePos, click)

@@ -13,7 +13,7 @@ class Ashe(Champion):
         self.passName = "Frost Shot"
         self.passDesc = "Slows enemies hit by attacks"
         self.actName = "Volley"
-        self.actDesc = "Fires a splay of arrows"
+        self.actDesc = "Fires a splay of arrows (Dayum, dat ashe)"
         self.actCd = (Info.acTime, 5)
         self.actCost = 4
         self.Champ = Ashe

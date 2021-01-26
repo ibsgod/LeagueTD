@@ -13,7 +13,7 @@ class Sona(Champion):
         self.passName = "Nightcore"
         self.passDesc = "Nearby towers regen health"
         self.actName = "Crescendo"
-        self.actDesc = "Fires a beam that stuns enemies"
+        self.actDesc = "Fires a beam that stuns enemies (stealing kills since 2010)"
         self.actCd = (Info.acTime, 5)
         self.actCost = 4
         self.Champ = Sona

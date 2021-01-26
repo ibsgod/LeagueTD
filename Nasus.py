@@ -8,12 +8,12 @@ from Info import Info
 
 class Nasus(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Nasus", hp=15, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=40)
+        super().__init__(x, y, summ, name="Nasus", hp=15, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=4)
         self.passName = "Soul Eater"
         self.passDesc = "Gains HP when attacking"
         self.actName = "Siphoning Strike"
         self.Qbonus = 1
-        self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Permanently increased if it kills enemy. Super Form at 10 stacks."
+        self.actDesc = "Next attack deals (" + str(self.Qbonus) + ") extra damage. Permanently increased if it kills enemy. Super Form at 10 stacks. (Farming simulator fun)"
         self.actCd = (Info.acTime, 3)
         self.actCost = 2
         self.Champ = Nasus

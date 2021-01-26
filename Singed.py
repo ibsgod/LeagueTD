@@ -10,11 +10,11 @@ from Poison import Poison
 
 class Singed(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Singed", hp=20, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=4)
-        self.passName = "Fart"
-        self.passDesc = "Farts so bad it hurts enemies"
-        self.actName = "Sanik"
-        self.actDesc = "Runs this shit like cardio"
+        super().__init__(x, y, summ, name="Singed", hp=20, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=3)
+        self.passName = "Poison Trial"
+        self.passDesc = "Leaves a cloud of poison that damages the enemy"
+        self.actName = "Noxious Slipstream"
+        self.actDesc = "Runs up and down a determined path (Never chase a Singed)"
         self.actCd = (Info.acTime, 0.5)
         self.actCost = 0.05
         self.Champ = Singed

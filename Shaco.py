@@ -10,11 +10,11 @@ from Info import Info
 
 class Shaco(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Shaco", hp=15, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=10)
+        super().__init__(x, y, summ, name="Shaco", hp=15, mana=10, atk=1, atkrange=50, atkspd=1, be=5, ranged=False, block=1)
         self.passName = "Jack in the box"
         self.passDesc = "Periodically spawns boxes that attack enemies"
         self.actName = "Hallucinate"
-        self.actDesc = "Creates a clone for a few seconds"
+        self.actDesc = "Creates a clone for a few seconds (We live in a society)"
         self.actCd = (Info.acTime, 5)
         self.actCost = 6
         self.Champ = Shaco
