@@ -1,1 +1,1 @@
-{"champions": [{"name": "Nasus", "x": 618.0, "y": 417.0, "hp": 12.5, "mana": 5, "Qbonus": 17}], "be": 25, "acTime": 86688, "rounds": 4, "startLine": 7, "nexHp": 3}
+{"champions": [{"name": "Nasus", "x": 588.0, "y": 417.0, "hp": 20, "mana": 6, "Qbonus": 17}, {"name": "Sona", "x": 511.0, "y": 337.0, "hp": 10, "mana": 10}, {"name": "Ashe", "x": 514.0, "y": 190.0, "hp": 6, "mana": 9}], "be": 60, "acTime": 191619, "rounds": 7, "startLine": 17, "nexHp": 3}
