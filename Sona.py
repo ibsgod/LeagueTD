@@ -9,7 +9,7 @@ from Projectile import Projectile
 
 class Sona(Champion):
     def __init__(self, x, y, summ=False, hp=None, mana=None):
-        super().__init__(x, y, summ, name="Sona",  hp=10, mana=10, atk=0.5, atkrange=200, atkspd=1, be=5, ranged=True)
+        super().__init__(x, y, summ, name="Sona",  hp=10, mana=10, atk=0.5, atkrange=200, atkspd=1, be=10, ranged=True)
         self.passName = "Nightcore"
         self.passDesc = "Nearby towers regen health"
         self.actName = "Crescendo"

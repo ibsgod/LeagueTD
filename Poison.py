@@ -25,5 +25,5 @@ class Poison:
         for i in Info.enemies:
             if i not in self.hit and i.hitbox.collidepoint(self.x+self.size/2, self.y+self.size/2):
                 self.hit.append(i)
-                i.takeDamage(self.tower.atk/10)
+                i.takeDamage(self.tower.atk/8)
 

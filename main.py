@@ -128,7 +128,7 @@ def menu():
                 if i == "newGame":
                     endless = False
                     Info.rounds = 1
-                    Info.be = 5
+                    Info.be = 10
                     Info.acTime = 0
                     roundLine = 0
                     currIter = 0
@@ -296,17 +296,17 @@ def play():
         # random enemy generation if endless mode
         else:
             if playing:
-                r = random.randint(1, 600 - min(int(Info.acTime/4000), 400))
+                r = random.randint(1, 600 - min(int(Info.acTime/3000), 500))
                 if r <= 10:
-                    Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, random.randint(1, 1 + min(int(Info.acTime/10000), 5)))
+                    Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, random.randint(1, 1 + int(Info.acTime/5000)))
                 elif r == 11:
-                    Draven(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 2 + min(int(Info.acTime/10000), 10)))
+                    Draven(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 2 + int(Info.acTime/5000)))
                 elif r == 12:
-                    Darius(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 5 + min(int(Info.acTime/10000), 20)))
+                    Darius(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 5 + int(Info.acTime/5000)))
                 elif r == 13:
-                    Katarina(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + min(int(Info.acTime/10000), 25)))
+                    Katarina(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + int(Info.acTime/5000)))
                 elif r == 13:
-                    Swain(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + min(int(Info.acTime / 10000), 25)))
+                    Swain(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + int(Info.acTime / 5000)))
         # champions gan mana over time
         if manaTimer > Info.acTime:
             manaTimer = Info.acTime
@@ -507,11 +507,11 @@ def play():
             valid = False
             if not Info.summoning.ranged:
                 for i in Info.pathareas:
-                    if i.collidepoint(mousePos[0], mousePos[1] + 50):
+                    if i.collidepoint(mousePos[0], mousePos[1] + 30):
                         valid = True
             else:
                 for i in Info.towerspots:
-                    if i.collidepoint(mousePos[0], mousePos[1] + 50):
+                    if i.collidepoint(mousePos[0], mousePos[1] + 30):
                         valid = True
             if mousePos[0] > 1050 or mousePos[1] > 550 or valid:
                 Info.summoning.tick(mousePos, click)
