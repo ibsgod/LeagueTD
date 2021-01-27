@@ -33,7 +33,6 @@ class Nexus:
 
         if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
             if click:
-                print("Sdf")
                 Info.selected = self
                 return 2
             return 1

@@ -17,12 +17,12 @@ class Projectile:
         self.atk = atk
         self.tower = tower
         self.img = pygame.image.load('egg.png')
-        if tower.name == "Ashe":
-            self.img = pygame.image.load('asheprojectile.png')
         if name == "Sona":
             self.img = pygame.transform.scale(pygame.image.load('sonaprojectile' + str(random.randint(1,2)) + '.png'), (40, 40))
-        if name == "sonault":
+        elif name == "sonault":
             self.img = pygame.image.load('sonault.png')
+        else:
+            self.img = pygame.image.load(str(tower.name.lower().replace(" ", "")) + "projectile.png")
         self.size = self.img.get_width()
         if self.angle < -90 and self.angle > -270:
             self.img = pygame.transform.flip(self.img, False, True)
