@@ -13,7 +13,7 @@ class Box:
         self.y = y
         self.img = pygame.image.load("sudo.png")
         try:
-            self.img = pygame.image.load(name.lower().replace(" ", "") + ".png")
+            self.img = pygame.image.load("box.png")
         except:
             pass
         self.idleimg = self.img
@@ -39,7 +39,7 @@ class Box:
         i = 1
         while True:
             try:
-                self.atkAnim.append(pygame.image.load(self.name.lower().replace(" ", "") + str(i) + ".png"))
+                self.atkAnim.append(pygame.image.load("box" + str(i) + ".png"))
                 i += 1
             except:
                 break
@@ -48,6 +48,10 @@ class Box:
 
 
     def draw(self, screen):
+        if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:
+            self.img = self.atkAnim[len(self.atkAnim) - int((self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim))-1]
+        else:
+            self.img = self.idleimg
         screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90, False), (self.x, self.y))
         if Info.selected is self:
             pygame.draw.circle(screen, (255, 0, 0), (int(self.cx), int(self.cy)), self.atkrange+50, 5)

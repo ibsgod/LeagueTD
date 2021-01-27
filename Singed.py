@@ -44,6 +44,11 @@ class Singed(Champion):
         
     def draw(self, screen):
         if not self.running:
+            if len(self.atkAnim) > 0 and self.animStart is not None and self.animStart + self.atkspd * 1000 > Info.acTime:
+                self.img = self.atkAnim[len(self.atkAnim) - int(
+                    (self.animStart + self.atkspd * 1000 - Info.acTime) / self.atkspd / 1000 * len(self.atkAnim)) - 1]
+            else:
+                self.img = self.idleimg
             screen.blit(pygame.transform.flip(self.img, self.rot >= 90 or self.rot <= -90,  False), (self.x, self.y))
         else:
             screen.blit(pygame.transform.flip(self.img, self.dir == 1 and self.path != 1 or self.path == 7,  False), (self.x, self.y))
