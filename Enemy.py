@@ -43,7 +43,7 @@ class Enemy:
         i = 1
         while True:
             try:
-                self.atkAnim.append(pygame.image.load(self.name.lower().replace(" ", "") + str(i) + ".png"))
+                self.atkAnim.append(pygame.image.load("EnemySprites/" + self.name.lower().replace(" ", "") + str(i) + ".png"))
                 i += 1
             except:
                 break

@@ -20,7 +20,7 @@ class Info:
                   pygame.Rect(9 * 75, 5 * 75, 75, 75), pygame.Rect(10 * 75, 4 * 75, 75, 75),
                   pygame.Rect(6 * 75, 5 * 75, 75, 75), pygame.Rect(7 * 75, 5 * 75, 75, 75)]
     buttDict = {}
-    be = 5
+    be = 10
     summoning = None
     acTime = 0
     particles = []

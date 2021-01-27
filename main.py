@@ -162,7 +162,7 @@ def menu():
                     break
                 if i == "endless":
                     endless = True
-                    Info.be = 1000
+                    Info.be = 10
                     Info.acTime = 0
                     play()
                     with open("highscore.txt") as file:
