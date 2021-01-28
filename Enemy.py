@@ -15,6 +15,7 @@ class Enemy:
         self.atk = atk
         self.atkspd = atkspd
         self.speed = speed
+        # loading image
         self.img = pygame.image.load("sudo.png")
         try:
             self.img = pygame.image.load("EnemySprites/" + name.lower().replace(" ", "") + ".png")
@@ -41,6 +42,7 @@ class Enemy:
             self.fireSound = None
         self.atkAnim = []
         i = 1
+        # loading animation sprites
         while True:
             try:
                 self.atkAnim.append(pygame.image.load("EnemySprites/" + self.name.lower().replace(" ", "") + str(i) + ".png"))
@@ -78,6 +80,7 @@ class Enemy:
                 if self.cx < i.cx:
                     self.rot -= 180
                 break
+        # move only if not blocked or paused
         if not yes and Info.playing:
             self.move()
         if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
@@ -88,11 +91,13 @@ class Enemy:
         return
 
     def move(self):
+        # adjust speed based on any slowing effets
         newspeed = self.speed
         if self.slow[1] > Info.acTime:
             newspeed *= self.slow[0]
         else:
             self.slow = (1, 0)
+        # x and y velocity for traveling between points on the path
         if self.path < len(Info.enemypath):
             if self.cx != Info.enemypath[self.path][0]:
                 if abs(Info.enemypath[self.path][0] - (self.cx)) > newspeed:
@@ -129,6 +134,7 @@ class Enemy:
         self.target.takeDamage(self.atk)
 
     def cripple(self, crip):
+        # more severe cripples take priority
         if crip[0] < self.slow[0] or crip[0] == self.slow[0] and crip[1] > self.slow[1]:
             self.slow = crip
 

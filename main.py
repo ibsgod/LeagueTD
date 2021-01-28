@@ -48,7 +48,7 @@ currIter = 0
 nextTime = 0
 startLine = 0
 roundInfo = 0
-nexHp = 3
+nexHp = 10
 nexus = None
 endless = None
 placeSound = pygame.mixer.Sound("place.wav")
@@ -89,7 +89,6 @@ def menu():
     global startmenuTime
     global nexHp
     global endless
-    global grass
     while True:
         if pygame.mixer.music.get_busy():
             pygame.mixer.music.stop()
@@ -162,7 +161,7 @@ def menu():
                     break
                 if i == "endless":
                     endless = True
-                    Info.be = 10
+                    Info.be = 20
                     Info.acTime = 0
                     play()
                     with open("highscore.txt") as file:
@@ -296,8 +295,8 @@ def play():
         # random enemy generation if endless mode
         else:
             if playing:
-                r = random.randint(1, 600 - min(int(Info.acTime/3000), 500))
-                if r <= 10:
+                r = random.randint(1, 600 - min(int(Info.acTime/5000), 500))
+                if r <= 10 or r <= 20 and Info.acTime < 20000:
                     Minion(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 30, random.randint(1, 1 + int(Info.acTime/5000)))
                 elif r == 11:
                     Draven(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 2 + int(Info.acTime/5000)))
@@ -305,7 +304,7 @@ def play():
                     Darius(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 5 + int(Info.acTime/5000)))
                 elif r == 13:
                     Katarina(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + int(Info.acTime/5000)))
-                elif r == 13:
+                elif r == 14:
                     Swain(Info.enemypath[0][0] - 30, Info.enemypath[0][1] - 50, random.randint(2, 4 + int(Info.acTime / 5000)))
         # champions gan mana over time
         if manaTimer > Info.acTime:

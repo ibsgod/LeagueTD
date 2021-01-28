@@ -28,7 +28,7 @@ class Draven(Enemy):
                     if i.cx < self.cx:
                         self.rot -= 180
                     self.target = i
-        if self.target is None:
+        if self.target is None and Info.playing:
             self.move()
         if self.hitbox.collidepoint(mousePos) and Info.summoning is None:
             if click:

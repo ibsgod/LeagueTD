@@ -16,6 +16,7 @@ class Projectile:
         self.pen = pen
         self.atk = atk
         self.tower = tower
+        # set image for projectile
         self.img = pygame.image.load('egg.png')
         if name == "Sona":
             self.img = pygame.transform.scale(pygame.image.load('sonaprojectile' + str(random.randint(1,2)) + '.png'), (40, 40))
@@ -37,14 +38,17 @@ class Projectile:
         screen.blit(self.tup[0], self.tup[1])
 
     def tick(self):
+        # calculate velocity for prohectile
         self.x += math.cos(math.radians(self.angle)) * self.speed
         self.y -= math.sin(math.radians(self.angle)) * self.speed
         self.hitbox = pygame.Rect(self.x, self.y, self.size, self.size)
         if self.x < 0 or self.y < 0 or self.x - 15 > 1050 or self.y - 15 > 550:
             self.tower.projects.remove(self)
             return
+        # if projectile came from player's champions
         if self.tower in Info.champions or self.name == "Box":
             for i in Info.enemies:
+                # apply slowing and stunning effects if needed
                 if i.hitbox.colliderect(self.hitbox) and i not in self.hit:
                     if self.name == "Ashe":
                         i.cripple((0.5, Info.acTime + 3000))
@@ -56,6 +60,7 @@ class Projectile:
                         return
                     else:
                         self.hit.append(i)
+        # if projectile came from an enemy champion
         elif self.tower in Info.enemies:
             for i in Info.champions:
                 if i.hitbox.colliderect(self.hitbox) and i not in self.hit:

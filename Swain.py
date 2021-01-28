@@ -53,10 +53,10 @@ class Swain(Enemy):
                     if i.cx < self.cx:
                         self.rot -= 180
                     self.target = i
-        if self.target is None:
+        if self.target is None  and Info.playing:
             self.move()
         yes = False
-        if self.slow[0] > 0 or self.slow[1] < Info.acTime:
+        if (self.slow[0] > 0 or self.slow[1] < Info.acTime) and Info.playing:
             for i in Info.champions:
                 if self.checkRange((self.cx, self.cy), self.atkrange, i.hitbox):
                     i.takeDamage(0.07)
